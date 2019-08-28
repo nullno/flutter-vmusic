@@ -1,4 +1,4 @@
-# flutter_vmusic
+# flutter-vmusic
 
 vip 音乐播放器
 

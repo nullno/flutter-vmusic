@@ -44,6 +44,7 @@ class LandingPage extends StatelessWidget{
                    ],
                  ),
                ),
+
                Positioned(
                  child:RaisedButton(
                      onPressed: () {
