@@ -15,12 +15,12 @@ class _MyApp extends  State<MyApp>{
       debugShowCheckedModeBanner: false,
       title:'vmusic',
       home: LandingPage(),
+      color:Colors.white,
       routes: Router.routes,
       initialRoute: Router.initialRoute,
     );
   }
 }
-
 
 void main(){
   runApp(MyApp());

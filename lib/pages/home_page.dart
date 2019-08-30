@@ -1,47 +1,80 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/cupertino.dart';
+import 'dart:ui';
 class HomePage extends StatefulWidget{
  final Map params;
      HomePage({
         Key key,
         this.params,
       }) : super(key: key);
-
   @override
   _HomePage createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage>{
-  final Map params;
-  _HomePage({
-    Key key,
-    this.params,
-  }) ;
-  Future<bool> _onBackPressed() {
+
+  //退出app检测
+  Future<bool> _exit() {
     return showDialog(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text('确定退出程序吗?'),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('暂不'),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                FlatButton(
-                  child: Text('确定'),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ));
+            context: context,
+            barrierDismissible: true, // user must tap button!
+            builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+            title: Text('是否退出应用？'),
+            actions:<Widget>[
+
+            CupertinoDialogAction(
+            child: Text('取消'),
+            onPressed: (){
+                Navigator.of(context).pop();
+             },
+            ),
+            CupertinoDialogAction(
+            child: Text('退出'),
+            onPressed: (){
+                Navigator.of(context).pop();
+            },
+            ),
+            ],
+            );
+            },
+    );
   }
+
+  //导航栏
+
+  var MianWarp=new Stack(
+     children: <Widget>[
+       Container(
+         width: double.infinity,
+         height: double.infinity,
+         color:Colors.lightBlue,
+         child: Text('vdv'),
+       ),
+       Align(
+         alignment: Alignment.bottomCenter,
+         child: Container(
+           width: double.infinity,
+           height: 50.0,
+           decoration: BoxDecoration(color: Colors.white70),
+           child: Text('播放状态'),
+         ),
+       ),
+     ],
+  );
+
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: _onBackPressed,
+        onWillPop: _exit,
         child:Material(
-            child: Text('Home 接收参数:${widget.params['des']}'),
+          color:Colors.redAccent,
+            child: Container(
+              margin:EdgeInsets.fromLTRB(0,MediaQueryData.fromWindow(window).padding.top,0,0),
+              color:Colors.white,
+              child: MianWarp,
+            ),
       )
     );
   }
