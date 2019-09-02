@@ -24,5 +24,5 @@ class _MyApp extends  State<MyApp>{
 
 void main(){
   runApp(MyApp());
-  SYS.systemUI(Colors.black);
+  SYS.systemUI(Colors.black12);
 }
