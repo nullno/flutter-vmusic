@@ -36,7 +36,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                        color:Colors.black,
                        width: double.infinity,
                        height: double.infinity,
-                       child:Image.network('http://lorempixel.com/650/1170/',fit: BoxFit.cover)
+                       child:Image.network('https://source.nullno.com/images/008.jpg',fit: BoxFit.cover)//http://lorempixel.com/650/1170/
                    ) ,
                  ),
                  Positioned(
@@ -86,8 +86,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
 
 //                       Navigator.pushNamedAndRemoveUntil( context,"/home", (router) => router == null);
                          //Navigator.of(context).pushNamed("/home");
-                         Router.fadeNavigator(context,'/home',{'des':'我是首页进来的555','from':'/launch'},(res){});
-
+                         Router.goHome(context,{'des':'我是首页进来的555','from':'/launch'},(res){});
                        },
                        color:Color(0xff00CD81),
                        splashColor:Color(0xff221535),

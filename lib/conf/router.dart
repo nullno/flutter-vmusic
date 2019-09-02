@@ -17,6 +17,7 @@ class Router{
       '/home':(BuildContext context) => HomePage(),
     };
  //自定义路由跳转
+
   static fadeNavigator(BuildContext context,String routeName,Map params,pop){
    Widget pageWidget;
    switch(routeName){
@@ -45,6 +46,15 @@ class Router{
 
 //    Navigator.push(context, EnterExitRoute(exitPage: LandingPage(), enterPage:  HomePage()));
   }
+
+  static goHome(BuildContext context,Map params,pop){
+
+    Navigator.pushAndRemoveUntil(context, EnterExitRoute(exitPage:LandingPage(),enterPage:HomePage(params:params)),(route) => route == null).then((Object result) {
+      pop(result);
+    });
+
+    }
+
 
 }
 

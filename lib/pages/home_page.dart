@@ -16,72 +16,80 @@ class HomePage extends StatefulWidget{
 class _HomePage extends State<HomePage>{
 
   Future<bool> _onWillPop()=>exitApp(context);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  @override
   Widget build(BuildContext context) {
-
-
-    var homeUi=new Column(
+    var homeUi= new Column(
        children: <Widget>[
          //导航栏
          Container(
            width: double.infinity,
            height:40.0,
-           padding:EdgeInsets.fromLTRB(0,5.0,0,5.0),
-           child:Row(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: <Widget>[
-           Expanded(
-             flex: 1,
-           child:RawMaterialButton(
-                 onPressed: (){},
-                 padding: EdgeInsets.all(0.0),
-                 child:Icon(Icons.menu,color: Colors.black,size:25.0),
-               ),
-           ),
-          Expanded(
-            flex: 5,
-           child:Container(
-                 alignment:Alignment.center,
-                 child: ListView(
-                   scrollDirection: Axis.horizontal,
-                   shrinkWrap: true,
-                   reverse: false,
-//                   padding: EdgeInsets.fromLTRB(0,15.0,0,0),
-                   children: <Widget>[
-                     RawMaterialButton(
-                       onPressed: (){},
-                       child:  Text('我的',style:TextStyle(fontWeight:FontWeight.normal,fontSize:15.0),),
+           child:Material(
+             color:Colors.white,
+               child:Row(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: <Widget>[
+                   Expanded(
+                     flex: 1,
+                     child:IconButton(
+                       onPressed: (){
+                         _scaffoldKey.currentState.openDrawer();
+                       },
+                       icon:Icon(Icons.menu,color: Colors.black,size:25.0),
                      ),
-                     RawMaterialButton(
-                       onPressed: (){},
-                       child:  Text('发现',style:TextStyle(fontWeight:FontWeight.bold,fontSize:16.0),),
-                     ),
-                     RawMaterialButton(
-                       onPressed: (){},
-                       child:  Text('视频',style:TextStyle(fontWeight:FontWeight.normal,fontSize:15.0),),
-                     ),
+                   ),
+                   Expanded(
+                     flex: 5,
+                     child:Container(
+                       alignment:Alignment.center,
+                       width:200,
+                       child: ListView(
+                         scrollDirection: Axis.horizontal,
+                         shrinkWrap: true,
+                         reverse: false,
+                         children: <Widget>[
+                           RawMaterialButton(
+                             onPressed: (){},
+                             highlightColor:Colors.transparent,
+                             splashColor: Colors.transparent,
+                             child:  Text('我的',style:TextStyle(fontWeight:FontWeight.normal,fontSize:15.0),),
+                           ),
+                           RawMaterialButton(
+                             onPressed: (){},
+                             highlightColor:Colors.transparent,
+                             splashColor: Colors.transparent,
+                             child:  Text('发现',style:TextStyle(fontWeight:FontWeight.bold,fontSize:16.0),),
+                           ),
+                           RawMaterialButton(
+                             onPressed: (){},
+                             highlightColor:Colors.transparent,
+                             splashColor: Colors.transparent,
+                             child:  Text('视频',style:TextStyle(fontWeight:FontWeight.normal,fontSize:15.0),),
+                           ),
 
-                   ],
-                 ) ,
+                         ],
+                       ) ,
+                     ),
+                   ),
+                   Expanded(
+                       flex: 1,
+                       child:IconButton(
+                         onPressed: (){},
+                         color:Colors.redAccent,
+                         icon:Icon(Icons.search,color: Colors.black,size:25.0),
+                       )
+                   )
+                 ],
                ),
-        ),
-           Expanded(
-             flex: 1,
-              child:RawMaterialButton(
-                 onPressed: (){},
-                 child:Icon(Icons.search,color: Colors.black,size:25.0),
-               )
-             )
-             ],
            ),
+
          ),
          //主界面
          Center(child:Text('VMUSIC'))
        ],
     );
-    //当前播放歌曲
 
     var warp=new Stack(
       children: <Widget>[
@@ -93,16 +101,22 @@ class _HomePage extends State<HomePage>{
       ],
     );
 
-
     return WillPopScope(
         onWillPop: _onWillPop,
-        child:Material(
-            child: Container(
-              margin:EdgeInsets.fromLTRB(0,MediaQueryData.fromWindow(window).padding.top,0,0),
-              color:Colors.white,
-              child: warp,
-            ),
-      )
-    );
+        child:Scaffold(
+            key: _scaffoldKey,
+            drawer: new Drawer(//New added
+              child: new Text('I545'),//New added
+            ),//New added
+            body:Material(
+              child: Container(
+                margin:EdgeInsets.fromLTRB(0,MediaQueryData.fromWindow(window).padding.top,0,0),
+                color:Colors.white,
+                child: warp,
+              ),
+        )
+        )
+      );
+
   }
 }

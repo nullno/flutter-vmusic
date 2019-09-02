@@ -44,10 +44,10 @@ class EnterExitRoute extends PageRouteBuilder {
         ) =>
         Stack(
           children: <Widget>[
-            SlideTransition(
-              position: new Tween<Offset>(
-                begin: const Offset(0.0, 0.0),
-                end: const Offset(-1.0, 0.0),
+            FadeTransition(
+              opacity: new Tween(
+                begin:1.0,
+                end: 0.0,
               ).animate(animation),
               child: exitPage,
             ),

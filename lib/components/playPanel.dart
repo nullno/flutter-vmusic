@@ -21,7 +21,7 @@ class _PlayPanel extends State<PlayPanel>{
       AudioPlayer audioPlayer = new AudioPlayer();
 
       Future<void> changePlay() async{
-      int result = !playStatus?await audioPlayer.play("http://m8.music.126.net/20190902153756/8a7d628f038e5091a2f64c9f9e06255f/ymusic/b854/e1ff/e7c1/653c638e24580e2869184c592a370056.mp3"):await audioPlayer.pause();
+      int result = !playStatus?await audioPlayer.play("https://source.nullno.com/images/mgdts.mp3"):await audioPlayer.pause();
       // 告诉Flutter state已经改变, Flutter会调用build()，更新显示
       setState((){
           if(result==1) {
