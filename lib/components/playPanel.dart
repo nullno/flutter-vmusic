@@ -21,13 +21,13 @@ class _PlayPanel extends State<PlayPanel>{
       AudioPlayer audioPlayer = new AudioPlayer();
 
       Future<void> changePlay() async{
-      int result = !playStatus?await audioPlayer.play("https://source.nullno.com/images/mgdts.mp3"):await audioPlayer.pause();
-      // 告诉Flutter state已经改变, Flutter会调用build()，更新显示
-      setState((){
-          if(result==1) {
-             playStatus = !playStatus;
-           }
-          });
+          int result = !playStatus?await audioPlayer.play("https://source.nullno.com/images/mgdts.mp3"):await audioPlayer.pause();
+          // 告诉Flutter state已经改变, Flutter会调用build()，更新显示
+           setState((){
+              if(result==1) {
+                 playStatus = !playStatus;
+               }
+              });
       }
 @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class _PlayPanel extends State<PlayPanel>{
       width: double.infinity,
       height: 50.0,
       padding:EdgeInsets.all(5.0),
-      decoration: BoxDecoration(color: Colors.white70),
+      decoration: BoxDecoration(color:Color.fromRGBO(255, 255, 255, 0.95)),
       child:  new Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[

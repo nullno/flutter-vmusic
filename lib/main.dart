@@ -14,6 +14,12 @@ class _MyApp extends  State<MyApp>{
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title:'vmusic',
+      theme: new ThemeData(
+        primaryColor: Colors.red,
+        primaryColorBrightness: Brightness.dark,
+        accentColor: Colors.black45,
+        accentColorBrightness: Brightness.light,
+      ),
       home: LandingPage(),
       color:Colors.white,
       routes: Router.routes,
@@ -23,6 +29,7 @@ class _MyApp extends  State<MyApp>{
 }
 
 void main(){
+
   runApp(MyApp());
-  SYS.systemUI(Colors.black12);
+  SYS.systemUI(Colors.transparent,Brightness.dark);
 }
