@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/conf/router.dart';
+import 'package:flutter_vmusic/conf/platform.dart';
 class LandingPage extends StatefulWidget {
 
   @override
@@ -15,10 +16,10 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
   void initState() {
     //初始化，当当前widget被插入到树中时调用
     super.initState();
+    SYS.hideBar();
     controllerTest = new AnimationController(
         duration: const Duration(milliseconds: 2000),
         vsync: this);
-
     curve = new CurvedAnimation(parent: controllerTest, curve: Curves.easeIn);
     controllerTest.forward();
   }

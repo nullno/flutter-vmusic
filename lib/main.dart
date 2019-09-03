@@ -3,6 +3,8 @@ import 'package:flutter_vmusic/conf/router.dart';
 import 'package:flutter_vmusic/conf/platform.dart';
 import 'package:flutter_vmusic/pages/landing_page.dart';
 
+
+
 class MyApp extends StatefulWidget {
   @override
   _MyApp createState() => _MyApp();
@@ -16,7 +18,7 @@ class _MyApp extends  State<MyApp>{
       title:'vmusic',
       theme: new ThemeData(
         primaryColor: Colors.red,
-        primaryColorBrightness: Brightness.dark,
+        primaryColorBrightness: Brightness.light,
         accentColor: Colors.black45,
         accentColorBrightness: Brightness.light,
       ),
@@ -29,7 +31,6 @@ class _MyApp extends  State<MyApp>{
 }
 
 void main(){
-
+  SYS.hideBar();
   runApp(MyApp());
-  SYS.systemUI(Colors.transparent,Brightness.dark);
 }

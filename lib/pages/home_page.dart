@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 //import 'dart:ui';
 import 'package:flutter_vmusic/components/playPanel.dart';
 import 'package:flutter_vmusic/components/exitApp.dart';
-
+import 'package:flutter_vmusic/conf/platform.dart';
 //三大模块
 import 'package:flutter_vmusic/components/find.dart';
 import 'package:flutter_vmusic/components/my.dart';
 import 'package:flutter_vmusic/components/video.dart';
+
+
 
 class HomePage extends StatefulWidget{
  final Map params;
@@ -33,6 +35,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
+    SYS.showBar(Colors.transparent,Brightness.dark);
     //初始化controller并添加监听
     controller = TabController(initialIndex:1,length: tabList.length, vsync: this);
     controller.addListener((){
@@ -79,6 +82,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
        child:AppBar(
          backgroundColor:Colors.white12,
          elevation: 0,
+         brightness: Brightness.light,
          bottom:PreferredSize(
              child:Container(
                width: double.infinity,
