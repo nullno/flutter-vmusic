@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/conf/router.dart';
-import 'package:flutter_vmusic/conf/platform.dart';
+import 'dart:math';
 class LandingPage extends StatefulWidget {
 
   @override
@@ -16,7 +16,6 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
   void initState() {
     //初始化，当当前widget被插入到树中时调用
     super.initState();
-    SYS.hideBar();
     controllerTest = new AnimationController(
         duration: const Duration(milliseconds: 2000),
         vsync: this);
@@ -27,18 +26,17 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
   Widget build(BuildContext context) {
      return Material(
            child:FadeTransition(
-             opacity: new Tween(begin: 0.0, end: 1.0).animate(curve),
+             opacity: new Tween(begin: 1.0, end: 1.0).animate(curve),
              child:  Stack(
                alignment: FractionalOffset(0.5, 0.9),
                children: <Widget>[
                  Positioned(
-
-                   child:Container(
-                       color:Colors.black,
-                       width: double.infinity,
-                       height: double.infinity,
-                       child:Image.network('https://source.nullno.com/images/008.jpg',fit: BoxFit.cover)//http://lorempixel.com/650/1170/
-                   ) ,
+                     child:Container(
+                                color:Colors.black,
+                                width: double.infinity,
+                                height: double.infinity,
+                                child:Image.network('https://source.nullno.com/images/sp${Random().nextInt(15)}.jpg',fit: BoxFit.cover)//http://lorempixel.com/650/1170/
+                      )
                  ),
                  Positioned(
                      child:Container(
@@ -57,8 +55,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                              ),
                              SizeTransition(
                                axis: Axis.horizontal, //控制宽度或者高度缩放
-                               sizeFactor:
-                               new Tween(begin: 0.1, end: 1.0).animate(curve),
+                               sizeFactor: new Tween(begin: 0.1, end: 1.0).animate(curve),
                                child: Container(
                                  width:300,
                                  height:3,

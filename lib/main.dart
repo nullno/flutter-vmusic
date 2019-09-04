@@ -17,8 +17,7 @@ class _MyApp extends  State<MyApp>{
       debugShowCheckedModeBanner: false,
       title:'vmusic',
       theme: new ThemeData(
-        primaryColor: Colors.red,
-        primaryColorBrightness: Brightness.light,
+        primaryColor: Colors.black,
         accentColor: Colors.black45,
         accentColorBrightness: Brightness.light,
       ),
@@ -31,6 +30,7 @@ class _MyApp extends  State<MyApp>{
 }
 
 void main(){
-  SYS.hideBar();
+
   runApp(MyApp());
+  SYS.systemUI(Colors.transparent,Colors.black);
 }
