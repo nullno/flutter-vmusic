@@ -90,7 +90,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
                 placeholder: _loader,
                 errorWidget: _error,
                 imageUrl: item['imgpath'],
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.cover,
               )
             ),
           )
