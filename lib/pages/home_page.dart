@@ -30,7 +30,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   TabController controller;//tab控制器
   int _currentIndex = 0; //选中下标
 
-  List<Map> tabList = [{'title':'我的'},{'title':'推荐'},{'title':'视频'}];//tab集合
+  List<Map> tabList = [{'title':'我的'},{'title':'发现'},{'title':'视频'}];//tab集合
 
   @override
   void initState() {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/conf/router.dart';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
+
 class LandingPage extends StatefulWidget {
 
   @override
@@ -22,6 +24,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
     curve = new CurvedAnimation(parent: controllerTest, curve: Curves.easeIn);
     controllerTest.forward();
   }
+
   @override
   Widget build(BuildContext context) {
      return Material(
@@ -35,7 +38,10 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                                 color:Colors.black,
                                 width: double.infinity,
                                 height: double.infinity,
-                                child:Image.network('https://source.nullno.com/images/sp${Random().nextInt(15)}.jpg',fit: BoxFit.cover)//http://lorempixel.com/650/1170/
+                                child:new CachedNetworkImage(
+                                  imageUrl: 'https://source.nullno.com/images/sp${Random().nextInt(15)}.jpg',
+                                  fit:  BoxFit.cover,
+                                 ),
                       )
                  ),
                  Positioned(
