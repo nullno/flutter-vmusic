@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/painting.dart';
+
+
 
 class Find extends StatefulWidget{
 
@@ -27,8 +30,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
                        {'title':'标题1','imgpath':'http://p1.music.126.net/5l0td3TZQg4pyX8oNdeaqA==/109951164372575001.jpg','link':''},];//tab集合
 
   //下拉刷新
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<
-      RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -44,27 +46,46 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
       }
     });
   }
+  void getHttp(resole,reject) async {
+
+
+    try {
+      Response<dynamic> response = await Dio().get("https://source.nullno.com/music/api.php",queryParameters:{"types":"playlist","id":"4395559"});
+
+      resole(jsonDecode(response.toString()));
+    } catch (e) {
+      reject(e);
+
+    }
+  }
 
   Future<Null> _getData() {
     final Completer<Null> completer = new Completer<Null>();
 
-    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
+
+
+    getHttp((res){
+        completer.complete(null);
+        setState(() {
+              print(res['playlist']['coverImgUrl']);
+        });
+
+    },(err){
+      print(err);
+    });
+    /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
     new Timer(Duration(seconds: 2), () {
       // 添加数据，更新界面
-      setState(() {
-
-      });
-
       // 完成刷新
       completer.complete(null);
     });
+     */
 
     return completer.future;
   }
 
   @override
   Widget build(BuildContext context) {
-
     Widget _loader(BuildContext context, String url) {
       return new Center(
         child: CircularProgressIndicator(
