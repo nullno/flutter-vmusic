@@ -4,7 +4,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'dart:async';
+
+import 'package:flutter/painting.dart';
 
 class Find extends StatefulWidget{
 
@@ -83,7 +86,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
         return Container(
             margin:EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
             child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
             child:Container(
               color:Colors.deepPurple,
               child: new CachedNetworkImage(
@@ -108,70 +111,144 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
           padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
+          childAspectRatio: 0.85,
           crossAxisCount: 3,
           shrinkWrap: true,
           children: <Widget>[
-            Container(
-              child:  new CachedNetworkImage(
-              placeholder: _loader,
-              errorWidget: _error,
-              imageUrl:'https://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg',
-              fit: BoxFit.cover,
-              ),
-            ),
-            Container(
-              color: Colors.teal[100],
-              child: new CachedNetworkImage(
-                placeholder: _loader,
-                errorWidget: _error,
-                imageUrl:'https://p3.music.126.net/34YW1QtKxJ_3YnX9ZzKhzw==/2946691234868155.jpg',
-                fit: BoxFit.cover,
+            Column(
+                children: <Widget>[
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+
+                         child: Stack(
+                            children: <Widget>[
+                              new CachedNetworkImage(
+                                  placeholder: _loader,
+                                  errorWidget: _error,
+                                  imageUrl:'http://p3.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg',
+                                  fit: BoxFit.cover,
+                                ),
+                              Positioned(
+                                right:8.0,
+                                child:Row(
+                                  children: <Widget>[
+                                    Icon(Icons.play_arrow,color:Colors.white),
+                                    Text('6w',style:TextStyle(color:Colors.white))
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                  ),
+                  Text('云音乐热歌榜',
+                      maxLines:1,
+                      overflow: TextOverflow.ellipsis,
+                      style:TextStyle(fontSize:13.0))
+                ],
+
+              ) ,
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+
+                    child: Stack(
+                      children: <Widget>[
+                        new CachedNetworkImage(
+                          placeholder: _loader,
+                          errorWidget: _error,
+                          imageUrl:'http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          right:8.0,
+                          child:Row(
+                            children: <Widget>[
+                              Icon(Icons.play_arrow,color:Colors.white),
+                              Text('6w',style:TextStyle(color:Colors.white))
+                            ],
+                          ),
+                        )
+                      ],
+                    )
                 ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('He\'d have you all unravel at the'),
-              color: Colors.teal[100],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Heed not the rabble'),
-              color: Colors.teal[200],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ), Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ), Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const Text('Sound of screams but the'),
-              color: Colors.teal[300],
-            ),
+                Text('云音乐新歌榜',
+                    maxLines:1,
+                    overflow: TextOverflow.ellipsis,
+                    style:TextStyle(fontSize:13.0))
+              ],
+
+            ) ,
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+
+                    child: Stack(
+                      children: <Widget>[
+                        new CachedNetworkImage(
+                          placeholder: _loader,
+                          errorWidget: _error,
+                          imageUrl:'http://p4.music.126.net/N2whh2Prf0l8QHmCpShrcQ==/19140298416347251.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          right:8.0,
+                          child:Row(
+                            children: <Widget>[
+                              Icon(Icons.play_arrow,color:Colors.white),
+                              Text('6w',style:TextStyle(color:Colors.white))
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                ),
+                Text('华语金曲榜',
+                    maxLines:1,
+                    overflow: TextOverflow.ellipsis,
+                    style:TextStyle(fontSize:13.0))
+              ],
+
+            ) ,
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+
+                    child: Stack(
+                      children: <Widget>[
+                        new CachedNetworkImage(
+                          placeholder: _loader,
+                          errorWidget: _error,
+                          imageUrl:'http://p4.music.126.net/2klOtThpDQ0CMhOy5AOzSg==/18878614648932971.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          right:8.0,
+                          child:Row(
+                            children: <Widget>[
+                              Icon(Icons.play_arrow,color:Colors.white),
+                              Text('6w',style:TextStyle(color:Colors.white))
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                ),
+                Text('中国TOP排行榜（内地榜）',
+                    maxLines:1,
+                    overflow: TextOverflow.ellipsis,
+                    style:TextStyle(fontSize:13.0))
+              ],
+
+            ) ,
+
           ],
         ),
 
       ],
     );
-
 
 
 
@@ -187,7 +264,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
           padding:const EdgeInsets.fromLTRB(0.0,0.0,0.0,60.0),
           children: <Widget>[
             Container(
-              height: 166.0,
+              height: 150.0,
               margin: EdgeInsets.fromLTRB(0.0, 10.0, 0, 10.0),
               color: Colors.white,
               child: slideBanner,
