@@ -34,3 +34,17 @@ void getRank(resolve,reject) async {
     reject(e);
   }
 }
+void getSongList(resolve,reject) async {
+  try {
+
+    Response<dynamic> response = await dio.get("api.php",queryParameters:{"types": "searchgd",
+      "count":20,
+      "source": "netease",
+      "pages": 1,
+      "name": "什么都可以"});
+      resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+

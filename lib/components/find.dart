@@ -38,7 +38,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
-    //初始化controller并添加监听
+    //广告图初始化controller并添加监听
     controller = TabController(initialIndex:0,length: adList.length, vsync: this);
     controller.addListener((){
       if (controller.index.toDouble() == controller.animation.value) {
@@ -48,6 +48,12 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
         });
       }
     });
+    _getData();
+    getSongList((res){
+        print(res);
+    },(err){
+      print(err);
+    });
   }
 
 
@@ -55,18 +61,18 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
   Future<Null> _getData() {
     final Completer<Null> completer = new Completer<Null>();
 
-    getRank((res){
+      getRank((res){
+          completer.complete(null);
+          setState(() {
+                songRanks=res;
+                print(res[0]['playlist']['coverImgUrl']);
+                print(res[1]['playlist']['coverImgUrl']);
+                print(res[2]['playlist']['coverImgUrl']);
+          });
+      },(err){
         completer.complete(null);
-        setState(() {
-              songRanks=res;
-              print(res[0]['playlist']['coverImgUrl']);
-              print(res[1]['playlist']['coverImgUrl']);
-              print(res[2]['playlist']['coverImgUrl']);
-        });
-    },(err){
-      completer.complete(null);
-      print(err);
-    });
+        print(err);
+      });
     /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
     new Timer(Duration(seconds: 2), () {
       // 添加数据，更新界面
@@ -129,7 +135,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
           padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 0.82,
+          childAspectRatio: 0.75,
           crossAxisCount: 4,
           shrinkWrap: true,
           children: songRanks.map((item){
@@ -180,7 +186,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
             padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.78,
+            childAspectRatio: 0.75,
             crossAxisCount: 2,
             shrinkWrap: true,
             children: songRanks.map((item){
