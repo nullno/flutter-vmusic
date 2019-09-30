@@ -3,6 +3,7 @@
 */
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class SYS {
     static systemUI(statusBarColor,navColor){
@@ -19,5 +20,8 @@ class SYS {
     static showBar(statusBarColor,iconColor){
          SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top, SystemUiOverlay.bottom]);
     }
+
+
+
 
 }

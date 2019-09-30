@@ -56,8 +56,8 @@ class _PlayPanel extends State<PlayPanel>{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('来自天堂的魔鬼', overflow: TextOverflow.ellipsis,style:TextStyle(),),
-                  Text('G.E.M.邓紫棋--新的心跳',style:TextStyle(color:Colors.black45,fontSize:12.0)),
+                  Text('来自天堂的魔鬼', overflow: TextOverflow.ellipsis,style:TextStyle(fontSize:14.0,height:1.5),),
+                  Text('G.E.M.邓紫棋--新的心跳',style:TextStyle(color:Colors.black45,fontSize:12.0,height:1.5)),
                 ],
               )
           ),

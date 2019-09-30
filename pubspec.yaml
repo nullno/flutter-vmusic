@@ -28,6 +28,7 @@ dependencies:
   dio: ^2.1.16 # latest version
   cached_network_image: ^1.1.1 #网络图片缓存
   path_provider: ^1.1.0   #这是获取 安卓  IOS 文件缓存路径
+  flutter_statusbarcolor: ^0.2.2
 
 
 

@@ -4,12 +4,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/painting.dart';
+import 'package:flutter_vmusic/conf/api.dart';
 
+import 'package:flutter_vmusic/utils/tool.dart';
 
 
 class Find extends StatefulWidget{
@@ -25,9 +25,12 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
   TabController controller;//tab控制器
   int _currentIndex = 0; //选中下标
 
+//  banner数据
   List<Map> adList = [{'title':'标题1','imgpath':'http://p1.music.126.net/h_G8a9xxeXTmwjcB8mR0pQ==/109951164372410150.jpg','link':''},
                        {'title':'标题1','imgpath':'http://p1.music.126.net/ifxuv3opkDlaljb2BDfT0Q==/109951164372452784.jpg','link':''},
                        {'title':'标题1','imgpath':'http://p1.music.126.net/5l0td3TZQg4pyX8oNdeaqA==/109951164372575001.jpg','link':''},];//tab集合
+ // 热歌榜数据
+  List<dynamic> songRanks = [];
 
   //下拉刷新
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -46,31 +49,22 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
       }
     });
   }
-  void getHttp(resole,reject) async {
 
 
-    try {
-      Response<dynamic> response = await Dio().get("https://source.nullno.com/music/api.php",queryParameters:{"types":"playlist","id":"4395559"});
-
-      resole(jsonDecode(response.toString()));
-    } catch (e) {
-      reject(e);
-
-    }
-  }
-
+//  刷新获取数据
   Future<Null> _getData() {
     final Completer<Null> completer = new Completer<Null>();
 
-
-
-    getHttp((res){
+    getRank((res){
         completer.complete(null);
         setState(() {
-              print(res['playlist']['coverImgUrl']);
+              songRanks=res;
+              print(res[0]['playlist']['coverImgUrl']);
+              print(res[1]['playlist']['coverImgUrl']);
+              print(res[2]['playlist']['coverImgUrl']);
         });
-
     },(err){
+      completer.complete(null);
       print(err);
     });
     /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
@@ -84,10 +78,13 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
     return completer.future;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     Widget _loader(BuildContext context, String url) {
       return new Center(
+        widthFactor:12.0,
         child: CircularProgressIndicator(
           backgroundColor:Colors.white,
         ),
@@ -100,7 +97,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
       );
     }
 
-    //slide banner图
+    //广告图
     Widget slideBanner = TabBarView(
       controller: controller,
       children:  adList.map((item){
@@ -109,7 +106,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
             child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child:Container(
-              color:Colors.deepPurple,
+              color:Colors.white12,
               child: new CachedNetworkImage(
                 placeholder: _loader,
                 errorWidget: _error,
@@ -119,10 +116,10 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
             ),
           )
         );
-
       }).toList()
     );
-  //热歌榜
+
+    //热歌榜
     Widget  songRank = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -132,146 +129,98 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
           padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 0.85,
-          crossAxisCount: 3,
+          childAspectRatio: 0.82,
+          crossAxisCount: 4,
           shrinkWrap: true,
-          children: <Widget>[
-            Column(
-                children: <Widget>[
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-
-                         child: Stack(
-                            children: <Widget>[
-                              new CachedNetworkImage(
-                                  placeholder: _loader,
-                                  errorWidget: _error,
-                                  imageUrl:'http://p3.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg',
-                                  fit: BoxFit.cover,
-                                ),
-                              Positioned(
-                                right:8.0,
-                                child:Row(
-                                  children: <Widget>[
-                                    Icon(Icons.play_arrow,color:Colors.white),
-                                    Text('6w',style:TextStyle(color:Colors.white))
-                                  ],
-                                ),
-                              )
-                            ],
-                          )
-                  ),
-                  Text('云音乐热歌榜',
-                      maxLines:1,
-                      overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:13.0))
-                ],
-
-              ) ,
-            Column(
+          children: songRanks.map((item){
+            return  Column(
               children: <Widget>[
                 ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-
                     child: Stack(
                       children: <Widget>[
                         new CachedNetworkImage(
                           placeholder: _loader,
                           errorWidget: _error,
-                          imageUrl:'http://p4.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg',
+                          imageUrl:item['playlist']['coverImgUrl'],
                           fit: BoxFit.cover,
                         ),
                         Positioned(
-                          right:8.0,
+                          left:3.0,
+                          bottom:3.0,
                           child:Row(
                             children: <Widget>[
-                              Icon(Icons.play_arrow,color:Colors.white),
-                              Text('6w',style:TextStyle(color:Colors.white))
+                              Icon(Icons.play_arrow,color:Colors.white,size:10.0,),
+                              Text(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
                             ],
                           ),
                         )
                       ],
                     )
                 ),
-                Text('云音乐新歌榜',
+                Text(item['playlist']['name'],
                     maxLines:1,
                     overflow: TextOverflow.ellipsis,
-                    style:TextStyle(fontSize:13.0))
+                    style:TextStyle(fontSize:13.0,height:1.5))
               ],
-
-            ) ,
-            Column(
-              children: <Widget>[
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-
-                    child: Stack(
-                      children: <Widget>[
-                        new CachedNetworkImage(
-                          placeholder: _loader,
-                          errorWidget: _error,
-                          imageUrl:'http://p4.music.126.net/N2whh2Prf0l8QHmCpShrcQ==/19140298416347251.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          right:8.0,
-                          child:Row(
-                            children: <Widget>[
-                              Icon(Icons.play_arrow,color:Colors.white),
-                              Text('6w',style:TextStyle(color:Colors.white))
-                            ],
-                          ),
-                        )
-                      ],
-                    )
-                ),
-                Text('华语金曲榜',
-                    maxLines:1,
-                    overflow: TextOverflow.ellipsis,
-                    style:TextStyle(fontSize:13.0))
-              ],
-
-            ) ,
-            Column(
-              children: <Widget>[
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-
-                    child: Stack(
-                      children: <Widget>[
-                        new CachedNetworkImage(
-                          placeholder: _loader,
-                          errorWidget: _error,
-                          imageUrl:'http://p4.music.126.net/2klOtThpDQ0CMhOy5AOzSg==/18878614648932971.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          right:8.0,
-                          child:Row(
-                            children: <Widget>[
-                              Icon(Icons.play_arrow,color:Colors.white),
-                              Text('6w',style:TextStyle(color:Colors.white))
-                            ],
-                          ),
-                        )
-                      ],
-                    )
-                ),
-                Text('中国TOP排行榜（内地榜）',
-                    maxLines:1,
-                    overflow: TextOverflow.ellipsis,
-                    style:TextStyle(fontSize:13.0))
-              ],
-
-            ) ,
-
-          ],
+            );
+          }).toList()
         ),
 
       ],
     );
 
+    //歌单
+    Widget  songList = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text('歌单',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+        GridView.count(
+            primary: false,
+            padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.78,
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            children: songRanks.map((item){
+              return  Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Stack(
+                        children: <Widget>[
+                          new CachedNetworkImage(
+                            placeholder: _loader,
+                            errorWidget: _error,
+                            imageUrl:item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top:3.0,
+                            right:3.0,
+                            child:Row(
+                              children: <Widget>[
+                                Icon(Icons.play_circle_outline,color:Colors.white,size:15.0,),
+                                Text(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:16.0))
+                              ],
+                            ),
+                          )
+                        ],
+                      )
+                  ),
+                  Text(item['playlist']['description'],
+                      maxLines:2,
+                      overflow: TextOverflow.ellipsis,
+                      style:TextStyle(fontSize:14.0,height:1.3))
+                ],
+              );
+            }).toList()
+        ),
 
+      ],
+    );
 
     return  Material(
 
@@ -286,13 +235,22 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
           children: <Widget>[
             Container(
               height: 150.0,
-              margin: EdgeInsets.fromLTRB(0.0, 10.0, 0, 10.0),
+              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0, 0.0),
+              padding:EdgeInsets.fromLTRB(0, 8.0, 0.0, 8.0),
               color: Colors.white,
               child: slideBanner,
             ),
             Container(
-              margin:EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
+              color:Colors.white,
+              margin:EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
               child: songRank,
+            ),
+            Container(
+              color:Colors.white,
+              margin:EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+              child: songList,
             ),
 
 
