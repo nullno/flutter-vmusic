@@ -1,7 +1,6 @@
 /*
 推荐模块
  */
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
@@ -22,57 +21,61 @@ class Find extends StatefulWidget{
 
 class _Find extends State<Find> with SingleTickerProviderStateMixin{
 
-  TabController controller;//tab控制器
-  int _currentIndex = 0; //选中下标
+
+
 
 //  banner数据
-  List<Map> adList = [{'title':'标题1','imgpath':'http://p1.music.126.net/h_G8a9xxeXTmwjcB8mR0pQ==/109951164372410150.jpg','link':''},
-                       {'title':'标题1','imgpath':'http://p1.music.126.net/ifxuv3opkDlaljb2BDfT0Q==/109951164372452784.jpg','link':''},
-                       {'title':'标题1','imgpath':'http://p1.music.126.net/5l0td3TZQg4pyX8oNdeaqA==/109951164372575001.jpg','link':''},];//tab集合
+  List<dynamic> adList = [];
  // 热歌榜数据
   List<dynamic> songRanks = [];
+ //歌单
+  List<dynamic> songLists = [];
+  //加载状态
+  int loadState   = 0; //0加载中 1加载成功 2加载失败
+
+  TabController AdController;//tab控制器
+  int _AdcurrentIndex = 0; //选中下标
 
   //下拉刷新
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   @override
-  void initState() {
-    super.initState();
-    //广告图初始化controller并添加监听
-    controller = TabController(initialIndex:0,length: adList.length, vsync: this);
-    controller.addListener((){
-      if (controller.index.toDouble() == controller.animation.value) {
+  void initState(){
+     super.initState();
+
+//    数据刷新
+//     getData((status){
+//       setState(() {
+//       loadState=status;
+//       });
+//     });
+    _flashData();
+  }
+  //广告图初始化controller并添加监听
+  void _adController(){
+    AdController = TabController(initialIndex:0,length:adList.length, vsync: this);
+    AdController.addListener((){
+      if (AdController.index.toDouble() == AdController.animation.value) {
         //赋值 并更新数据
         this.setState(() {
-          _currentIndex = controller.index;
+          _AdcurrentIndex = AdController.index;
         });
       }
     });
-    _getData();
-    getSongList((res){
-        print(res);
-    },(err){
-      print(err);
-    });
   }
 
-
-//  刷新获取数据
-  Future<Null> _getData() {
+  //  刷新获取数据
+  Future<Null> _flashData(){
     final Completer<Null> completer = new Completer<Null>();
 
-      getRank((res){
-          completer.complete(null);
-          setState(() {
-                songRanks=res;
-                print(res[0]['playlist']['coverImgUrl']);
-                print(res[1]['playlist']['coverImgUrl']);
-                print(res[2]['playlist']['coverImgUrl']);
-          });
-      },(err){
+    getData((status){
+      setState(() {
+        loadState=status;
         completer.complete(null);
-        print(err);
       });
+
+    });
+
     /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
     new Timer(Duration(seconds: 2), () {
       // 添加数据，更新界面
@@ -83,11 +86,45 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
 
     return completer.future;
   }
+  //获取数据
+ void getData(complete) async{
+    var status = 0;
+   //banner
+  await  getBanner((res){
+       status = 1;
+       adList = res['banners'];
+       _adController();
 
+   },(err){
+    status = 2;
+     print(err);
+   });
+
+   //获取热歌榜
+await  getRank((res){
+       status = 1;
+       songRanks=res;
+   },(err){
+     status = 2;
+     print(err);
+   });
+
+   // 获取推荐歌单
+await   getPersonalizedSongList((res){
+        status = 1;
+        songLists=res['result'];
+    },(err){
+      status = 2;
+      print(err);
+    });
+
+   complete(status);
+ }
 
 
   @override
   Widget build(BuildContext context) {
+
     Widget _loader(BuildContext context, String url) {
       return new Center(
         widthFactor:12.0,
@@ -103,9 +140,16 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
       );
     }
 
+    Widget _loaderImg(BuildContext context, String url) {
+      return new Center(
+        widthFactor:12.0,
+        child:Icon(Icons.headset,size:75.0,color:Colors.grey,),
+      );
+    }
+
     //广告图
     Widget slideBanner = TabBarView(
-      controller: controller,
+      controller: AdController,
       children:  adList.map((item){
         return Container(
             margin:EdgeInsets.fromLTRB(15.0, 0, 15.0, 0),
@@ -116,7 +160,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
               child: new CachedNetworkImage(
                 placeholder: _loader,
                 errorWidget: _error,
-                imageUrl: item['imgpath'],
+                imageUrl: item['imageUrl'],//item['imageUrl'],
                 fit: BoxFit.cover,
               )
             ),
@@ -146,9 +190,9 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
                     child: Stack(
                       children: <Widget>[
                         new CachedNetworkImage(
-                          placeholder: _loader,
+                          placeholder: _loaderImg,
                           errorWidget: _error,
-                          imageUrl:item['playlist']['coverImgUrl'],
+                          imageUrl:item['playlist']['coverImgUrl'],//item['playlist']['coverImgUrl'],
                           fit: BoxFit.cover,
                         ),
                         Positioned(
@@ -180,16 +224,37 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
     Widget  songList = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text('歌单',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+        Row(
+          mainAxisAlignment:MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('推荐歌单',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+            ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                 child:  Material(
+                   color:Colors.white,
+                   child:   InkWell(
+                    onTap: (){
+
+                    },
+                     highlightColor:Colors.grey,
+
+                  child:Icon(Icons.more_horiz),
+                ),
+              )
+            ),
+
+          ],
+        ),
+
         GridView.count(
             primary: false,
             padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.75,
+            childAspectRatio: 0.82,
             crossAxisCount: 2,
             shrinkWrap: true,
-            children: songRanks.map((item){
+            children: songLists.map((item){
               return  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -198,9 +263,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
                       child: Stack(
                         children: <Widget>[
                           new CachedNetworkImage(
-                            placeholder: _loader,
-                            errorWidget: _error,
-                            imageUrl:item['playlist']['coverImgUrl'],
+                            imageUrl:item['picUrl'],//item['picUrl'],
                             fit: BoxFit.cover,
                           ),
                           Positioned(
@@ -209,14 +272,14 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
                             child:Row(
                               children: <Widget>[
                                 Icon(Icons.play_circle_outline,color:Colors.white,size:15.0,),
-                                Text(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:16.0))
+                                Text(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:16.0))
                               ],
                             ),
                           )
                         ],
                       )
                   ),
-                  Text(item['playlist']['description'],
+                  Text(item['name'],
                       maxLines:2,
                       overflow: TextOverflow.ellipsis,
                       style:TextStyle(fontSize:14.0,height:1.3))
@@ -230,10 +293,12 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
 
     return  Material(
 
-      child:RefreshIndicator(
+      child:loadState!=1?Center(child:loadState==0?CircularProgressIndicator(
+        backgroundColor:Colors.redAccent,
+      ):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
         color:Colors.deepPurple,
         key: _refreshIndicatorKey,
-        onRefresh: _getData, // onRefresh 参数是一个 Future<Null> 的回调
+        onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调
         child:  ListView(
           primary: true,
           physics: const AlwaysScrollableScrollPhysics(),
@@ -258,6 +323,7 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
               padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
               child: songList,
             ),
+            Text('~我也是有底线的呦~',textAlign:TextAlign.center,style:TextStyle(height:2.0),)
 
 
           ],
@@ -267,5 +333,11 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
 
     );
 
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    AdController.dispose();
   }
 }
