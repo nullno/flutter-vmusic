@@ -15,7 +15,7 @@ class SYS {
       }
     }
     static hideBar(){
-         SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+         SystemChrome.setEnabledSystemUIOverlays([]);
     }
     static showBar(statusBarColor,iconColor){
          SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top, SystemUiOverlay.bottom]);

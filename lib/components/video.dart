@@ -3,13 +3,15 @@
  */
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:flutter_vmusic/utils/tool.dart';
+import 'package:flutter_vmusic/utils/video_player.dart';
+
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
+
 import 'dart:async';
 import 'package:flutter_vmusic/conf/api.dart';
-import 'package:flutter_vmusic/utils/tool.dart';
-
-//import 'package:video_player/video_player.dart';
-//import 'package:chewie/chewie.dart';
-import 'package:flutter_simple_video_player/flutter_simple_video_player.dart';
 
 class VideoList extends StatefulWidget{
 
@@ -62,13 +64,9 @@ class _VideoList extends State<VideoList>{
 //  全部mv监听加载更多
   addloadMore(){
     _scrollController.addListener(() {
-      var maxScroll = _scrollController.position.maxScrollExtent;
-      var pixel = _scrollController.position.pixels;
-
+      var maxScroll = _scrollController.position.maxScrollExtent.toStringAsFixed(0);
+      var pixel = _scrollController.position.pixels.toStringAsFixed(0);
       if (maxScroll == pixel && loadMore["hasMore"]) {
-
-        print(maxScroll);
-        print(pixel);
 
         setState(() {
           loadMore["Text"] = "正在加载中...";
@@ -157,33 +155,12 @@ class _VideoList extends State<VideoList>{
       result['vurl']=1;
     });
     getMVDetail(mid,(res){
-
-
       if(res['code']==200){
           setState(() {
               allList.forEach((aitem)=>{
                   aitem['vurl']=null
               });
-
-
-              print(res['data']['brs']);
-              if(res['data']['brs'].containsKey("1080")){
-                result['vurl']=res['data']['brs']['1080'].replaceAll('http:', 'https:');
-               return;
-              }
-              if(res['data']['brs'].containsKey("720")){
-                result['vurl']=res['data']['brs']['720'].replaceAll('http:', 'https:');
-                return;
-              }
-              if(res['data']['brs'].containsKey("480")){
-                result['vurl']=res['data']['brs']['480'].replaceAll('http:', 'https:');
-                return;
-              }
-              if(res['data']['brs'].containsKey("240")){
-                result['vurl']=res['data']['brs']['240'].replaceAll('http:', 'https:');
-                return;
-              }
-              result['vurl']="https://source.nullno.com/blog/220050677efa8a64c018ef48289ea236a0c11531882000114a12be221fc.mp4";
+              result['vurl']= videoUrl(res['data']['brs']);
 
           });
       }
@@ -250,14 +227,18 @@ class _VideoList extends State<VideoList>{
                         ],
                       )
                   ),
-                  Text(item['name'],
-                      maxLines:1,
-                      overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:13.0,height:1.5)),
+                  Container(
+                    padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                    child: Text(item['name'],
+                        maxLines:1,
+                        overflow: TextOverflow.ellipsis,
+                        style:TextStyle(fontSize:13.0)),
+                  ),
+
                   Text(item['artistName'],
                       maxLines:1,
                       overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:13.0,height:1,color:Colors.grey))
+                      style:TextStyle(fontSize:12.0,color:Colors.grey,height:1.2))
                 ],
               );
             }).toList()
@@ -318,11 +299,20 @@ class _VideoList extends State<VideoList>{
                                 ],
                               ),
                             ):Container(),
+                            item['vurl']==null||item['vurl']==1?Positioned(
+                              bottom:3.0,
+                              right:3.0,
+                              child:Row(
+                                children: <Widget>[
+                                  Icon(Icons.graphic_eq,color:Colors.white,size:13.0,),
+                                  Text(formatDuration(item['duration']),style:TextStyle(color:Colors.white,fontSize:12.0))
+                                ],
+                              ),
+                            ):Container(),
                             item['vurl']==1?CircularProgressIndicator(backgroundColor:Colors.redAccent):item['vurl']==null?Positioned(
                               child:InkWell(
                                 onTap:(){
                                   midPlayer(item['id']);
-
                                  },
                                 child:Icon(Icons.play_arrow,color:Colors.white70,size:45.0,),
                               ),
@@ -349,9 +339,7 @@ class _VideoList extends State<VideoList>{
 
     return  Material(
 
-        child:loadState!=1?Center(child:loadState==0?CircularProgressIndicator(
-          backgroundColor:Colors.redAccent,
-        ):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
+        child:loadState!=1?Center(child:loadState==0?Loading(indicator: LineScalePulseOutIndicator(), size: 50.0):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
           color:Colors.deepPurple,
           key: _refreshIndicatorKey,
           onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调
@@ -372,7 +360,19 @@ class _VideoList extends State<VideoList>{
                 padding:EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 8.0),
                 child: allMV,
               ),
-              Text(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1),)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width:15.0,
+                    height:15.0,
+                    margin:EdgeInsets.all(5.0),
+                    child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
+                  ),
+                  Text(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1))
+                ],
+              )
+
             ],
           ),
         )

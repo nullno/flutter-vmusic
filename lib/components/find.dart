@@ -2,14 +2,17 @@
 推荐模块
  */
 import 'package:flutter/material.dart';
+import 'package:flutter_vmusic/conf/router.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
 
-import 'package:flutter/painting.dart';
+//import 'package:flutter/painting.dart';
 import 'package:flutter_vmusic/conf/api.dart';
-
 import 'package:flutter_vmusic/utils/tool.dart';
 
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/line_scale_indicator.dart';
 
 class Find extends StatefulWidget{
 
@@ -73,7 +76,6 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
         loadState=status;
         completer.complete(null);
       });
-
     });
 
     /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
@@ -156,7 +158,7 @@ await   getPersonalizedSongList((res){
             child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child:Container(
-              color:Colors.white12,
+              color:Colors.grey,
               child: new CachedNetworkImage(
                 placeholder: _loader,
                 errorWidget: _error,
@@ -234,7 +236,7 @@ await   getPersonalizedSongList((res){
                    color:Colors.white,
                    child:   InkWell(
                     onTap: (){
-
+                      Router.fadeNavigator(context,"/songmenu",{'des':'我是首页进来的555','from':'/find'},(res){});
                     },
                      highlightColor:Colors.grey,
 
@@ -251,7 +253,7 @@ await   getPersonalizedSongList((res){
             padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.82,
+            childAspectRatio: 0.8,
             crossAxisCount: 2,
             shrinkWrap: true,
             children: songLists.map((item){
@@ -263,6 +265,8 @@ await   getPersonalizedSongList((res){
                       child: Stack(
                         children: <Widget>[
                           new CachedNetworkImage(
+                            placeholder: _loaderImg,
+                            errorWidget: _error,
                             imageUrl:item['picUrl'],//item['picUrl'],
                             fit: BoxFit.cover,
                           ),
@@ -279,10 +283,14 @@ await   getPersonalizedSongList((res){
                         ],
                       )
                   ),
-                  Text(item['name'],
-                      maxLines:2,
-                      overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:14.0,height:1.3))
+                  Container(
+                    padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                    child:Text(item['name'],
+                        maxLines:2,
+                        overflow: TextOverflow.ellipsis,
+                        style:TextStyle(fontSize:14.0,height:1.2)),
+                  )
+
                 ],
               );
             }).toList()
@@ -292,10 +300,8 @@ await   getPersonalizedSongList((res){
     );
 
     return  Material(
-
-      child:loadState!=1?Center(child:loadState==0?CircularProgressIndicator(
-        backgroundColor:Colors.redAccent,
-      ):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
+//        255, 240,62,57
+      child:loadState!=1?Center(child:loadState==0?Loading(indicator: LineScaleIndicator(), size: 50.0):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
         color:Colors.deepPurple,
         key: _refreshIndicatorKey,
         onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调

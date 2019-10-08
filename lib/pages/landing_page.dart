@@ -90,7 +90,8 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
 
 //                       Navigator.pushNamedAndRemoveUntil( context,"/home", (router) => router == null);
                          //Navigator.of(context).pushNamed("/home");
-                         Router.goHome(context,{'des':'我是首页进来的555','from':'/launch'},(res){});
+                         Router.fadeNavigator(context,"/home",{'des':'我是首页进来的555','from':'/launch'},(res){});
+//                         Router.goHome(context,{'des':'我是首页进来的555','from':'/launch'},(res){});
                        },
                        color:Color(0xff00CD81),
                        splashColor:Color(0xff221535),

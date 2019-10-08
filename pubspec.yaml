@@ -29,9 +29,9 @@ dependencies:
   cached_network_image: ^1.1.1 #网络图片缓存
   path_provider: ^1.1.0   #这是获取 安卓  IOS 文件缓存路径
   flutter_statusbarcolor: ^0.2.2
-#  chewie: ^0.9.8 #视频播放
-  #video_player: ^0.10.2+1 #视频播放
-  flutter_simple_video_player: ^0.0.9 #视频播放
+  video_player: ^0.10.2+3 #视频播放
+  screen: ^0.0.4 #全屏
+  loading: ^1.0.1 #加载动画
 
 
 

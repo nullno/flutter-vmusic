@@ -30,9 +30,6 @@ class _MyApp extends  State<MyApp>{
 }
 
 void main(){
-
   runApp(MyApp());
   SYS.systemUI(Colors.transparent,Colors.white);
-//  SYS.hideBar();
-
 }

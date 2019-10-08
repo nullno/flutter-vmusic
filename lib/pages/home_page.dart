@@ -30,13 +30,15 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   TabController controller;//tab控制器
   int _currentIndex = 0; //选中下标
 
-  List<Map> tabList = [{'title':'我的'},{'title':'发现'},{'title':'视频'}];//tab集合
+
+
+  List<Map> tabList = [{'title':'发现'},{'title':'视频'}];//tab集合
 
   @override
   void initState() {
     super.initState();
     //初始化controller并添加监听
-    controller = TabController(initialIndex:1,length: tabList.length, vsync: this);
+    controller = TabController(initialIndex:0,length: tabList.length, vsync: this);
     controller.addListener((){
           if (controller.index.toDouble() == controller.animation.value) {
               //赋值 并更新数据
@@ -60,13 +62,13 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
     Widget getModule(int i) {
       Widget mainBlock;
       switch(i){
+//          case 0:
+//            mainBlock = MyCenter();
+//          break;
           case 0:
-            mainBlock = MyCenter();
-          break;
-          case 1:
             mainBlock = Find();
             break;
-          case 2:
+          case 1:
             mainBlock = VideoList();
           break;
        }
