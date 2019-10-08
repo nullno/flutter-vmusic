@@ -51,7 +51,16 @@ void getRank(resolve,reject) async {
 void getPersonalizedSongList(resolve,reject) async {
   try {
     Response<dynamic> response = await dio.get("/personalized",queryParameters:{"limit": 20});
-      resolve(jsonDecode(response.toString()));
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+//精品歌单（歌单广场）
+void getHighqualitySongList(parameters,resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/top/playlist/highquality",queryParameters:{"limit": 8,"before":parameters['before'],"cat":parameters["cat"]});
+    resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);
   }
@@ -69,7 +78,7 @@ void getPersonalizedMV(resolve,reject) async {
 //获取全部mv
 void getAllMV(parameters,resolve,reject) async {
   try {
-    Response<dynamic> response = await dio.get("/mv/all",queryParameters:{"area":parameters['area'],"limit": 10,"offset":parameters['offset']});
+    Response<dynamic> response = await dio.get("/mv/all",queryParameters:{"area":parameters['area'],"limit": 8,"offset":parameters['offset']});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);

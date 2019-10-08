@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter_vmusic/utils/tool.dart';
 import 'package:flutter_vmusic/utils/video_player.dart';
+import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
@@ -36,7 +37,8 @@ class _VideoList extends State<VideoList>{
   Map  loadMore={
          "Text":"----",
          "Page":0,
-         "hasMore":true
+         "hasMore":true,
+         "isScrollBottom":false,
        };
 
   //视频控制
@@ -47,18 +49,9 @@ class _VideoList extends State<VideoList>{
   @override
   void initState(){
     super.initState();
-
-
     addloadMore();
-
-
 //   数据刷新
     _flashData();
-//    getData((status){
-//      setState(() {
-//        loadState=status;
-//      });
-//    });
   }
 
 //  全部mv监听加载更多
@@ -70,10 +63,11 @@ class _VideoList extends State<VideoList>{
 
         setState(() {
           loadMore["Text"] = "正在加载中...";
+          loadMore["isScrollBottom"]=true;
              getAllMV({"area":'全部',"offset":loadMore['page']*10},(res){
                   loadMore['hasMore']=res['hasMore'];
-
                   loadMore['page']=loadMore['page']+1;
+                  loadMore["isScrollBottom"]=false;
                   res['data'].forEach((aitem)=>{
                     aitem['vurl']=null,
                     allList.add(aitem)
@@ -191,13 +185,13 @@ class _VideoList extends State<VideoList>{
     Widget  topMV = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text('精选MV',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+        FixedSizeText('精选MV',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
         GridView.count(
             primary: false,
             padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 1.3,
+            childAspectRatio: 1.25,
             crossAxisCount: 2,
             shrinkWrap: true,
             children: topList.map((item){
@@ -220,7 +214,7 @@ class _VideoList extends State<VideoList>{
                             child:Row(
                               children: <Widget>[
                                 Icon(Icons.play_arrow,color:Colors.white,size:10.0,),
-                                Text(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
+                                FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
                               ],
                             ),
                           )
@@ -229,16 +223,16 @@ class _VideoList extends State<VideoList>{
                   ),
                   Container(
                     padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                    child: Text(item['name'],
+                    child: FixedSizeText(item['name'],
                         maxLines:1,
                         overflow: TextOverflow.ellipsis,
                         style:TextStyle(fontSize:13.0)),
                   ),
 
-                  Text(item['artistName'],
+                  FixedSizeText(item['artistName'],
                       maxLines:1,
                       overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:12.0,color:Colors.grey,height:1.2))
+                      style:TextStyle(fontSize:12.0,color:Colors.grey))
                 ],
               );
             }).toList()
@@ -257,7 +251,7 @@ class _VideoList extends State<VideoList>{
         child:  Row(
           mainAxisAlignment:MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('全部',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+            FixedSizeText('全部',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
 
           ],
         ),
@@ -295,7 +289,7 @@ class _VideoList extends State<VideoList>{
                               child:Row(
                                 children: <Widget>[
                                   Icon(Icons.play_arrow,color:Colors.white,size:13.0,),
-                                  Text(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:12.0))
+                                  FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:12.0))
                                 ],
                               ),
                             ):Container(),
@@ -305,7 +299,7 @@ class _VideoList extends State<VideoList>{
                               child:Row(
                                 children: <Widget>[
                                   Icon(Icons.graphic_eq,color:Colors.white,size:13.0,),
-                                  Text(formatDuration(item['duration']),style:TextStyle(color:Colors.white,fontSize:12.0))
+                                  FixedSizeText(formatDuration(item['duration']),style:TextStyle(color:Colors.white,fontSize:12.0))
                                 ],
                               ),
                             ):Container(),
@@ -322,7 +316,7 @@ class _VideoList extends State<VideoList>{
                     ),
                     Container(
                       margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,0.0),
-                      child:Text(item['name'],
+                      child:FixedSizeText(item['name'],
                             maxLines:2,
                             overflow: TextOverflow.ellipsis,
                             style:TextStyle(fontSize:16.0,height:1.2)))
@@ -360,19 +354,21 @@ class _VideoList extends State<VideoList>{
                 padding:EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 8.0),
                 child: allMV,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width:15.0,
-                    height:15.0,
-                    margin:EdgeInsets.all(5.0),
-                    child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
-                  ),
-                  Text(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1))
-                ],
+              Visibility(
+                child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width:15.0,
+                          height:15.0,
+                          margin:EdgeInsets.all(5.0),
+                          child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
+                        ),
+                        FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1))
+                      ],
+                    ),
+                visible: loadMore["isScrollBottom"],
               )
-
             ],
           ),
         )

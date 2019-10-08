@@ -10,9 +10,12 @@ import 'dart:async';
 //import 'package:flutter/painting.dart';
 import 'package:flutter_vmusic/conf/api.dart';
 import 'package:flutter_vmusic/utils/tool.dart';
+import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/line_scale_indicator.dart';
+
+
 
 class Find extends StatefulWidget{
 
@@ -175,7 +178,7 @@ await   getPersonalizedSongList((res){
     Widget  songRank = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text('热歌榜',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+        FixedSizeText('热歌榜',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
         GridView.count(
           primary: false,
           padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
@@ -203,14 +206,14 @@ await   getPersonalizedSongList((res){
                           child:Row(
                             children: <Widget>[
                               Icon(Icons.play_arrow,color:Colors.white,size:10.0,),
-                              Text(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
+                              FixedSizeText(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
                             ],
                           ),
                         )
                       ],
                     )
                 ),
-                Text(item['playlist']['name'],
+                FixedSizeText(item['playlist']['name'],
                     maxLines:1,
                     overflow: TextOverflow.ellipsis,
                     style:TextStyle(fontSize:13.0,height:1.5))
@@ -229,7 +232,7 @@ await   getPersonalizedSongList((res){
         Row(
           mainAxisAlignment:MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('推荐歌单',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
+            FixedSizeText('推荐歌单',textAlign:TextAlign.left,style:TextStyle(fontSize:16.0, fontWeight:FontWeight.bold)),
             ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                  child:  Material(
@@ -276,7 +279,7 @@ await   getPersonalizedSongList((res){
                             child:Row(
                               children: <Widget>[
                                 Icon(Icons.play_circle_outline,color:Colors.white,size:15.0,),
-                                Text(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:16.0))
+                                FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:14.0))
                               ],
                             ),
                           )
@@ -285,10 +288,10 @@ await   getPersonalizedSongList((res){
                   ),
                   Container(
                     padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                    child:Text(item['name'],
+                    child:FixedSizeText(item['name'],
                         maxLines:2,
                         overflow: TextOverflow.ellipsis,
-                        style:TextStyle(fontSize:14.0,height:1.2)),
+                        style:TextStyle(fontSize:14.0,height:1)),
                   )
 
                 ],
@@ -329,7 +332,7 @@ await   getPersonalizedSongList((res){
               padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
               child: songList,
             ),
-            Text('~我也是有底线的呦~',textAlign:TextAlign.center,style:TextStyle(height:2.0),)
+            FixedSizeText('~我也是有底线的呦~',textAlign:TextAlign.center,style:TextStyle(height:2.0),)
 
 
           ],
