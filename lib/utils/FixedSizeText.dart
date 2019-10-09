@@ -10,7 +10,7 @@ class FixedSizeText extends Text {
     Locale locale,
     bool softWrap,
     TextOverflow overflow,
-    double textScaleFactor = 1.0,
+    double textScaleFactor = 0.9,
     int maxLines,
     String semanticsLabel,
   }) : super(data,

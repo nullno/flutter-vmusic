@@ -295,7 +295,7 @@ await   getPersonalizedSongList((res){
                     child:FixedSizeText(item['name'],
                         maxLines:2,
                         overflow: TextOverflow.ellipsis,
-                        style:TextStyle(fontSize:13.0,height:1.1)),
+                        style:TextStyle(fontSize:13.0,height:1.2)),
                   )
 
                 ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter_vmusic/utils/tool.dart';
@@ -100,7 +100,6 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
             child:Container(
               color:Colors.black,
               width: double.infinity,
-
               height:40.0,
               child:Material(
                 color:Colors.transparent,
@@ -121,7 +120,15 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                       flex: 5,
                       child:Container(
                         alignment:Alignment.centerLeft,
-                        child: FixedSizeText( songDetail.isEmpty?"loading...":songDetail['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
+                        child:Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FixedSizeText( songDetail.isEmpty?"loading...":songDetail['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
+                            FixedSizeText( songDetail.isEmpty?"":songDetail['description'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0),),
+                          ],
+                        ),
+
                       ),
                     ),
                     Expanded(
@@ -129,7 +136,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                         child:IconButton(
                           onPressed: (){},
                           color:Colors.redAccent,
-                          icon:Icon(Icons.search,color: Colors.white,size:25.0),
+                          icon:Icon(Icons.more_vert,color: Colors.white,size:25.0),
                         )
                     )
                   ],
@@ -162,8 +169,54 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                    width: 500,
                   ),
                 ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black,
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
                 Container(
-                  child: Text('sdvsdv'),
+                  child: Row(
+                    children: <Widget>[
+                            ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child:
+                                Container(
+                                  width:150.0,
+                                  height:150.0,
+                                  child:Stack(
+                                    children: <Widget>[
+                                      new CachedNetworkImage(
+                                        placeholder: _loaderImg,
+                                        imageUrl: songDetail.isEmpty?"":songDetail['coverImgUrl'],//item['picUrl'],
+                                        fit: BoxFit.cover,
+                                        width:double.infinity,
+                                      ),
+                                      Positioned(
+                                        top:3.0,
+                                        right:3.0,
+                                        child:Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Icon(Icons.play_arrow,color:Colors.black,size:12.0,),
+                                            FixedSizeText(tranNumber(songDetail.isEmpty?0:songDetail['playCount']),style:TextStyle(color:Colors.black,fontSize:12.0))
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+
+                    ],
+
+                  ),
                 )
               ],
             ),

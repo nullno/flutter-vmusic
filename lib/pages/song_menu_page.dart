@@ -158,11 +158,10 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                 slivers: <Widget>[
                   SliverAppBar(
                     floating: true, pinned: false, snap: true,
-                    elevation:0,
                     expandedHeight: 200.0,
                     backgroundColor:Colors.black,
                     brightness: Brightness.dark,
-                    title: FixedSizeText('歌单广场',style:TextStyle(fontSize:14.0,color:Colors.white)) ,
+                    title: FixedSizeText('歌单广场',style:TextStyle(fontSize:16.0,color:Colors.white)) ,
                     iconTheme: IconThemeData(color: Colors.white),
                     flexibleSpace: FlexibleSpaceBar(
                       centerTitle: true,
@@ -244,7 +243,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                                   child:FixedSizeText(item['name'],
                                       maxLines:2,
                                       overflow: TextOverflow.ellipsis,
-                                      style:TextStyle(fontSize:13.0,height:1.1)),
+                                      style:TextStyle(fontSize:13.0,height:1.2)),
                                 )
                               ],
                             );
