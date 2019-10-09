@@ -36,8 +36,8 @@ void getRank(resolve,reject) async {
         dio.get("/playlist/detail",queryParameters:{"id":"2617766278"}),
         dio.get("/playlist/detail",queryParameters:{"id":"3779629"}),
         dio.get("/playlist/detail",queryParameters:{"id":"3778678"}),
-        dio.get("/playlist/detail",queryParameters:{"id":"1978921795"}),
-        dio.get("/playlist/detail",queryParameters:{"id":"19723756"}),
+//        dio.get("/playlist/detail",queryParameters:{"id":"1978921795"}),
+//        dio.get("/playlist/detail",queryParameters:{"id":"19723756"}),
         dio.get("/playlist/detail",queryParameters:{"id":"2884035"}),
         dio.get("/playlist/detail",queryParameters:{"id":"2250011882"})
     ]);
@@ -46,6 +46,7 @@ void getRank(resolve,reject) async {
     reject(e);
   }
 }
+
 
 //获取推荐歌单
 void getPersonalizedSongList(resolve,reject) async {
@@ -60,6 +61,16 @@ void getPersonalizedSongList(resolve,reject) async {
 void getHighqualitySongList(parameters,resolve,reject) async {
   try {
     Response<dynamic> response = await dio.get("/top/playlist/highquality",queryParameters:{"limit": 8,"before":parameters['before'],"cat":parameters["cat"]});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//获取歌单详情
+void getSongDetail(parameters,resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/playlist/detail",queryParameters:{"id":parameters["id"]});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);

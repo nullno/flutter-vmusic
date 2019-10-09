@@ -161,7 +161,7 @@ await   getPersonalizedSongList((res){
             child: ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child:Container(
-              color:Colors.grey,
+              color:Colors.white30,
               child: new CachedNetworkImage(
                 placeholder: _loader,
                 errorWidget: _error,
@@ -184,24 +184,22 @@ await   getPersonalizedSongList((res){
           padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 0.75,
-          crossAxisCount: 4,
+          childAspectRatio: 1,
+          crossAxisCount: 6,
           shrinkWrap: true,
           children: songRanks.map((item){
             return  Column(
               children: <Widget>[
                 ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(50),
                     child: Stack(
                       children: <Widget>[
                         new CachedNetworkImage(
-                          placeholder: _loaderImg,
-                          errorWidget: _error,
                           imageUrl:item['playlist']['coverImgUrl'],//item['playlist']['coverImgUrl'],
                           fit: BoxFit.cover,
                         ),
-                        Positioned(
-                          left:3.0,
+                       /* Positioned(
+                          left:20.0,
                           bottom:3.0,
                           child:Row(
                             children: <Widget>[
@@ -209,14 +207,14 @@ await   getPersonalizedSongList((res){
                               FixedSizeText(tranNumber(item['playlist']['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
                             ],
                           ),
-                        )
+                        )*/
                       ],
                     )
                 ),
-                FixedSizeText(item['playlist']['name'],
+               /* FixedSizeText(item['playlist']['name'],
                     maxLines:1,
                     overflow: TextOverflow.ellipsis,
-                    style:TextStyle(fontSize:13.0,height:1.5))
+                    style:TextStyle(fontSize:13.0,height:1.5))*/
               ],
             );
           }).toList()
@@ -237,7 +235,7 @@ await   getPersonalizedSongList((res){
                 borderRadius: BorderRadius.circular(10),
                  child:  Material(
                    color:Colors.white,
-                   child:   InkWell(
+                   child: InkWell(
                     onTap: (){
                       Router.fadeNavigator(context,"/songmenu",{'des':'我是首页进来的555','from':'/find'},(res){});
                     },
@@ -263,35 +261,41 @@ await   getPersonalizedSongList((res){
               return  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Stack(
-                        children: <Widget>[
-                          new CachedNetworkImage(
-                            placeholder: _loaderImg,
-                            errorWidget: _error,
-                            imageUrl:item['picUrl'],//item['picUrl'],
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top:3.0,
-                            right:3.0,
-                            child:Row(
-                              children: <Widget>[
-                                Icon(Icons.play_circle_outline,color:Colors.white,size:15.0,),
-                                FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:14.0))
-                              ],
+                  InkWell(
+                    onTap: (){
+                      Router.fadeNavigator(context,"/songmenulist",{'id':item['id'],'from':'/find'},(res){});
+                    },
+                    child:ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Stack(
+                          children: <Widget>[
+                            new CachedNetworkImage(
+                              placeholder: _loaderImg,
+                              errorWidget: _error,
+                              imageUrl:item['picUrl'],//item['picUrl'],
+                              fit: BoxFit.cover,
                             ),
-                          )
-                        ],
-                      )
+                            Positioned(
+                              top:3.0,
+                              right:3.0,
+                              child:Row(
+                                children: <Widget>[
+                                  Icon(Icons.play_circle_outline,color:Colors.white,size:15.0,),
+                                  FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:14.0))
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                    ) ,
                   ),
+
                   Container(
                     padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
                     child:FixedSizeText(item['name'],
                         maxLines:2,
                         overflow: TextOverflow.ellipsis,
-                        style:TextStyle(fontSize:14.0,height:1)),
+                        style:TextStyle(fontSize:13.0,height:1.1)),
                   )
 
                 ],
@@ -332,7 +336,7 @@ await   getPersonalizedSongList((res){
               padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
               child: songList,
             ),
-            FixedSizeText('~我也是有底线的呦~',textAlign:TextAlign.center,style:TextStyle(height:2.0),)
+            FixedSizeText('~我也是有底线的呦~',textAlign:TextAlign.center,style:TextStyle(height:2.0,fontSize:12.0),)
 
 
           ],

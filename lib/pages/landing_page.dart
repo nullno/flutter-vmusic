@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/conf/router.dart';
-import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:flutter_vmusic/conf/platform.dart';
 
 class LandingPage extends StatefulWidget {
 
@@ -18,6 +19,8 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
   void initState() {
     //初始化，当当前widget被插入到树中时调用
     super.initState();
+//    全屏
+    SYS.hideBar();
     controllerTest = new AnimationController(
         duration: const Duration(milliseconds: 2000),
         vsync: this);
@@ -39,7 +42,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                                 width: double.infinity,
                                 height: double.infinity,
                                 child:new CachedNetworkImage(
-                                  imageUrl: 'https://source.nullno.com/images/sp${Random().nextInt(15)}.jpg',
+                                  imageUrl: 'https://source.nullno.com/images/sp3.jpg',
                                   fit:  BoxFit.cover,
                                  ),
                       )
@@ -87,11 +90,11 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                  Positioned(
                    child:RaisedButton(
                        onPressed: () {
-
 //                       Navigator.pushNamedAndRemoveUntil( context,"/home", (router) => router == null);
                          //Navigator.of(context).pushNamed("/home");
+                         //Router.goHome(context,{'des':'我是首页进来的555','from':'/launch'},(res){});
                          Router.fadeNavigator(context,"/home",{'des':'我是首页进来的555','from':'/launch'},(res){});
-//                         Router.goHome(context,{'des':'我是首页进来的555','from':'/launch'},(res){});
+
                        },
                        color:Color(0xff00CD81),
                        splashColor:Color(0xff221535),

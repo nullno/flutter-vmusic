@@ -4,9 +4,10 @@ import 'package:flutter_vmusic/components/playPanel.dart';
 import 'package:flutter_vmusic/components/exitApp.dart';
 //三大模块
 import 'package:flutter_vmusic/components/find.dart';
-import 'package:flutter_vmusic/components/my.dart';
+//import 'package:flutter_vmusic/components/my.dart';
 import 'package:flutter_vmusic/components/video.dart';
 
+import 'package:flutter_vmusic/conf/platform.dart';
 
 
 
@@ -37,6 +38,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
+
+    SYS.systemUI(Colors.transparent,Colors.white);
+
     //初始化controller并添加监听
     controller = TabController(initialIndex:0,length: tabList.length, vsync: this);
     controller.addListener((){

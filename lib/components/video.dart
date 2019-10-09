@@ -59,7 +59,9 @@ class _VideoList extends State<VideoList>{
     _scrollController.addListener(() {
       var maxScroll = _scrollController.position.maxScrollExtent.toStringAsFixed(0);
       var pixel = _scrollController.position.pixels.toStringAsFixed(0);
-      if (maxScroll == pixel && loadMore["hasMore"]) {
+
+      print(loadMore["isScrollBottom"]);
+      if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
 
         setState(() {
           loadMore["Text"] = "正在加载中...";
@@ -79,7 +81,8 @@ class _VideoList extends State<VideoList>{
 
       } else if(!loadMore['hasMore']) {
         setState(() {
-          loadMore["Text"] = "~我也是有底线的呦~";
+          loadMore["isScrollBottom"]=true;
+           loadMore["Text"] = "~我也是有底线的呦~";
         });
       }
     });
@@ -88,7 +91,6 @@ class _VideoList extends State<VideoList>{
   //  下拉刷新数据
   Future<Null> _flashData() async{
     final Completer<Null> completer = new Completer<Null>();
-
     getData((status){
       setState(() {
         loadState=status;
@@ -97,20 +99,12 @@ class _VideoList extends State<VideoList>{
 
     });
 
-    /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
-    new Timer(Duration(seconds: 2), () {
-      // 添加数据，更新界面
-      // 完成刷新
-      completer.complete(null);
-    });
-     */
 
     return completer.future;
   }
   //获取数据
   void getData(complete) async{
     var status = 0;
-
 
     //获取推荐
     await  getPersonalizedMV((res){
@@ -126,6 +120,7 @@ class _VideoList extends State<VideoList>{
         status = 1;
         loadMore['hasMore']=res['hasMore'];
         loadMore['page']=1;
+        loadMore["isScrollBottom"]=false;
         allList.clear();
         res['data'].forEach((aitem)=>{
           aitem['vurl']=null,
@@ -137,11 +132,10 @@ class _VideoList extends State<VideoList>{
       print(err);
     });
 
-
     complete(status);
   }
 
-
+//获取播放链接
   void midPlayer(mid){
     var result = allList.singleWhere((aitem)=>(aitem['id']==mid),orElse: ()=>(0));
 
@@ -232,7 +226,7 @@ class _VideoList extends State<VideoList>{
                   FixedSizeText(item['artistName'],
                       maxLines:1,
                       overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:12.0,color:Colors.grey))
+                      style:TextStyle(fontSize:11.0,color:Colors.grey))
                 ],
               );
             }).toList()
@@ -316,10 +310,10 @@ class _VideoList extends State<VideoList>{
                     ),
                     Container(
                       margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,0.0),
-                      child:FixedSizeText(item['name'],
+                      child:FixedSizeText(item['name']+'---'+item['artistName'],
                             maxLines:2,
                             overflow: TextOverflow.ellipsis,
-                            style:TextStyle(fontSize:16.0,height:1.2)))
+                            style:TextStyle(fontSize:14.0,height:1.2)))
 
                   ],
                 ),
@@ -358,13 +352,13 @@ class _VideoList extends State<VideoList>{
                 child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Container(
+                        loadMore["hasMore"]?Container(
                           width:15.0,
                           height:15.0,
                           margin:EdgeInsets.all(5.0),
                           child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
-                        ),
-                        FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1))
+                        ):Container(),
+                        FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1,fontSize:12.0))
                       ],
                     ),
                 visible: loadMore["isScrollBottom"],

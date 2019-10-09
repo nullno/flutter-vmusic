@@ -8,6 +8,7 @@ import 'package:flutter_vmusic/pages/landing_page.dart';
 import 'package:flutter_vmusic/pages/home_page.dart';
 
 import 'package:flutter_vmusic/pages/song_menu_page.dart';
+import 'package:flutter_vmusic/pages/song_mlist_page.dart';
 
 class Router{
   //初始化路由
@@ -31,6 +32,10 @@ class Router{
      case'/songmenu':
        pageWidget=SongMenu(params:params);
        break;
+     case'/songmenulist':
+       pageWidget=SongMenuList(params:params);
+       break;
+
    }
     if(pageWidget!=null){
       if(params['from']=='/launch'){

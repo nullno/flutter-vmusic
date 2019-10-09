@@ -24,6 +24,11 @@ class SongMenu extends StatefulWidget{
 class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
 
 
+  //滑动切配置（自定义TabBar和TabBarView联动）
+  TabController controller;//tab控制器
+  int _currentIndex = 0; //选中下标
+
+  List<Map> tabList = [{'title':'全部'},{'title':'华语'},{'title':'古风'},{'title':'欧美'},{'title':'流行'}];//tab集合
   //歌单
   List<dynamic> songLists = [];
   //加载状态
@@ -34,9 +39,12 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
   Map  loadMore={
     "Text":"正在加载中",
     "Page":0,
+    "type":"全部",
     "hasMore":true,
     "isScrollBottom":true,
   };
+
+
 
   //初始化滚动监听器，加载更多使用
   ScrollController _scrollController = new ScrollController();
@@ -45,6 +53,16 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
     super.initState();
     addloadMore();
     _flashData();
+    //初始化controller并添加监听
+    controller = TabController(initialIndex:0,length: tabList.length, vsync: this);
+    controller.addListener((){
+      if (controller.index.toDouble() == controller.animation.value) {
+        //赋值 并更新数据
+        this.setState(() {
+          _currentIndex = controller.index;
+        });
+      }
+    });
   }
 
   //  全部mv监听加载更多
@@ -55,14 +73,15 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
       
       print(maxScroll == pixel);
       print(loadMore["hasMore"]);
-      if (maxScroll == pixel && loadMore["hasMore"]) {
+      if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
 
         setState(() {
           loadMore["Text"] = "正在加载中...";
           loadMore["isScrollBottom"]=true;
-          getHighqualitySongList({"cat":'全部',"before":loadMore['page']},(res){
+          getHighqualitySongList({"cat":loadMore['type'],"before":loadMore['page']},(res){
                       loadMore['hasMore']=res['more'];
                       loadMore['page']=res['lasttime'];
+                      loadMore["isScrollBottom"]=false;
                       res['playlists'].forEach((aitem)=>{
                         songLists.add(aitem)
                       });
@@ -73,6 +92,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
 
       } else if(!loadMore['hasMore']) {
         setState(() {
+          loadMore["isScrollBottom"]=true;
           loadMore["Text"] = "~我也是有底线的呦~";
         });
       }
@@ -90,13 +110,6 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
       });
     });
 
-    /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
-    new Timer(Duration(seconds: 2), () {
-      // 添加数据，更新界面
-      // 完成刷新
-      completer.complete(null);
-    });
-     */
 
     return completer.future;
   }
@@ -106,11 +119,12 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
     var status = 0;
 
     // 获取推荐歌单
-    await  getHighqualitySongList({"cat":'全部',"before":0},(res){
+    await  getHighqualitySongList({"cat":loadMore['type'],"before":0},(res){
       status = 1;
       loadMore['hasMore']=res['more'];
       loadMore['page']=res['lasttime'];
       loadMore["isScrollBottom"]=false;
+      songLists.clear();
       songLists=res['playlists'];
 
     },(err){
@@ -128,7 +142,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
     Widget _loaderImg(BuildContext context, String url) {
       return new Center(
         widthFactor:12.0,
-        child:Icon(Icons.headset,size:75.0,color:Colors.grey,),
+        child:Loading(indicator: LineScalePulseOutIndicator(), size: 50.0),
       );
     }
 
@@ -142,16 +156,55 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: <Widget>[
-                  const SliverAppBar(
-                    floating: false, pinned: true, snap: false,
+                  SliverAppBar(
+                    floating: true, pinned: false, snap: true,
+                    elevation:0,
                     expandedHeight: 200.0,
+                    backgroundColor:Colors.black,
+                    brightness: Brightness.dark,
+                    title: FixedSizeText('歌单广场',style:TextStyle(fontSize:14.0,color:Colors.white)) ,
+                    iconTheme: IconThemeData(color: Colors.white),
                     flexibleSpace: FlexibleSpaceBar(
-                      title: FixedSizeText('歌单广场',style:TextStyle(fontSize:14.0)),
+                      centerTitle: true,
+                        background: new CachedNetworkImage(
+                          placeholder: _loaderImg,
+                          imageUrl:songLists.length>0?songLists[0]['coverImgUrl']:"",//item['picUrl'],
+                          fit: BoxFit.cover,
+                        ),
+                       ),
+                      bottom:PreferredSize(
+                        child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black,
+                                ],
+                              ),
+                            ),
+                          child: TabBar(
+                         controller: controller,
+                         labelColor: Colors.red,
+                         unselectedLabelColor: Colors.white,
+                         indicatorColor: Colors.redAccent, //
+                         tabs:tabList.map((item) {
+                           return  new Tab(text: item['title']);
+                         }).toList(),
+                         //点击事件
+                         onTap: (int i) {
+                           setState(() {
+                             loadMore['type'] = tabList[i]['title'];
+                             _flashData();
+                           });
+                         },
+                       ),),
                     ),
 
-                  ),
+                   ),
                   SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(15.0,15.0,15.0,0.0),
                       sliver:SliverGrid(
                         gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, //Grid按两列显示
@@ -191,7 +244,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                                   child:FixedSizeText(item['name'],
                                       maxLines:2,
                                       overflow: TextOverflow.ellipsis,
-                                      style:TextStyle(fontSize:14.0)),
+                                      style:TextStyle(fontSize:13.0,height:1.1)),
                                 )
                               ],
                             );
@@ -205,20 +258,19 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                           child: Visibility(child:Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Container(
+                              loadMore["hasMore"]?Container(
                                 width:15.0,
                                 height:15.0,
                                 margin:EdgeInsets.all(5.0),
                                 child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
-                              ),
-                              FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1))
+                              ):Container(),
+                              FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1,fontSize:12.0))
                             ],
                           ),
                             visible:loadMore["isScrollBottom"],
                           )
                       ),
                   ),
-
 
                 ]
             ),
@@ -235,3 +287,56 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
 
 
 
+
+/*
+ Sliver头
+ SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _SliverAppBarDelegate(
+                          TabBar(
+                        controller: controller,
+                        labelColor: Colors.red,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorColor: Colors.black, //
+                        tabs:tabList.map((item) {
+                          return  new Tab(text: item['title']);
+                        }).toList(),
+                        //点击事件
+                        onTap: (int i) {
+                            setState(() {
+                                loadMore['type'] = tabList[i]['title'];
+                                _flashData();
+                              });
+                          print(i);
+                        },
+                      )
+                      )
+                  ),
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      child: _tabBar,
+      color:Colors.white,
+      padding:EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
+  }
+}
+ */

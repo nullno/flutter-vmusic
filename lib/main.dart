@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/conf/router.dart';
-import 'package:flutter_vmusic/conf/platform.dart';
 import 'package:flutter_vmusic/pages/landing_page.dart';
 
 
@@ -31,5 +30,5 @@ class _MyApp extends  State<MyApp>{
 
 void main(){
   runApp(MyApp());
-  SYS.systemUI(Colors.transparent,Colors.white);
+
 }
