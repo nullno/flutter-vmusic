@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+/*
+*歌单详情
+ */
 
+import 'package:flutter/material.dart';
 import 'package:flutter_vmusic/utils/tool.dart';
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +14,7 @@ import 'package:flutter_vmusic/conf/api.dart';
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
 
-
+import 'package:flutter_vmusic/components/playPanel.dart';
 
 class SongMenuList extends StatefulWidget{
   final Map params;
@@ -30,10 +31,12 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
 
   //歌单详情
   Map songDetail =  new Map();
+  List<dynamic> songLists = [];
   //加载状态
   int loadState   = 0; //0加载中 1加载成功 2加载失败
   //下拉刷新
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKeySong = new GlobalKey<RefreshIndicatorState>();
+
 
 
   @override
@@ -69,6 +72,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     await  getSongDetail({"id":widget.params['id']},(res){
 
       songDetail=res['playlist'];
+      songLists=res['playlist']['tracks'];
 
     },(err){
       status = 2;
@@ -89,6 +93,8 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
       );
     }
 
+    //播放面板
+    final mPlayPanel = PlayPanel();
     //顶部导航
     Widget appNav =PreferredSize(
       preferredSize: Size.fromHeight(40.0),
@@ -125,7 +131,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             FixedSizeText("歌单",maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
-                            FixedSizeText( songDetail.isEmpty?"":songDetail['description'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0),),
+                            FixedSizeText( songDetail.isEmpty?"Loading...":songDetail['description'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0),),
                           ],
                         ),
 
@@ -134,9 +140,14 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                     Expanded(
                         flex: 1,
                         child:IconButton(
-                          onPressed: (){},
+                          onPressed: (){
+                                   setState(() {
+
+                                   });
+                          },
                           color:Colors.redAccent,
                           icon:Icon(Icons.more_vert,color: Colors.white,size:25.0),
+
                         )
                     )
                   ],
@@ -169,7 +180,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                    width: 500,
                   ),
                 ),
-              Container(
+                Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -181,91 +192,147 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                   ),
                 ),
               ),
-                Container(
-                  padding:EdgeInsets.all(15.0),
-                  height:180.0,
-                  child: Row(
-                     crossAxisAlignment:CrossAxisAlignment.start,
-                     mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 2,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child:
-                          Container(
-                            child:Stack(
-                              children: <Widget>[
-                                new CachedNetworkImage(
-                                  imageUrl: songDetail.isEmpty?"":songDetail['coverImgUrl'],//item['picUrl'],
-                                  fit: BoxFit.cover,
-                                  width:double.infinity,
+                songDetail.isEmpty?new Center(
+                  widthFactor:12.0,
+                  child:Loading(indicator: LineScalePulseOutIndicator(), size: 50.0),
+                ):Column(
+                  children: <Widget>[
+                    Container(
+                      padding:EdgeInsets.all(15.0),
+                      height:180.0,
+                      child: Row(
+                        crossAxisAlignment:CrossAxisAlignment.start,
+                        mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            flex: 2,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child:
+                              Container(
+                                child:Stack(
+                                  children: <Widget>[
+                                    new CachedNetworkImage(
+                                      imageUrl:songDetail['coverImgUrl'],//item['picUrl'],
+                                      fit: BoxFit.cover,
+                                      width:double.infinity,
+                                    ),
+                                    Positioned(
+                                      top:3.0,
+                                      right:3.0,
+                                      child:Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(Icons.play_arrow,color:Colors.white,size:12.0,),
+                                          FixedSizeText(tranNumber(songDetail['playCount']),style:TextStyle(color:Colors.white,fontSize:12.0,shadows: <Shadow>[
+                                            Shadow(color: Colors.black,blurRadius:1.0, offset: Offset(1, 1))
+                                          ],))
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Positioned(
-                                  top:3.0,
-                                  right:3.0,
-                                  child:Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(Icons.play_arrow,color:Colors.black,size:12.0,),
-                                      FixedSizeText(tranNumber(songDetail.isEmpty?0:songDetail['playCount']),style:TextStyle(color:Colors.black,fontSize:12.0))
-                                    ],
-                                  ),
-                                )
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child:Container(
-                          padding:EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              FixedSizeText(songDetail.isEmpty?"":songDetail['name'],maxLines:2,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:20.0,color:Colors.white)),
-                              FixedSizeText(songDetail.isEmpty?"":songDetail['description'],maxLines:2,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:10.0,color:Colors.white)),
-                              Container(
-                                  margin:EdgeInsets.fromLTRB(0, 20.0,0.0, 20.0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(30),
-                                        child: Container(
-                                          width:30.0,
-                                          height:30.0,
-
-                                          child: new CachedNetworkImage(
-                                            imageUrl: songDetail.isEmpty?"":songDetail['creator']['avatarUrl'],//item['picUrl'],
-                                            fit: BoxFit.cover,
+                          Expanded(
+                            flex: 3,
+                            child:Container(
+                              padding:EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
+                              height:double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  FixedSizeText(songDetail['name'],maxLines:2,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:20.0,color:Colors.white,shadows: <Shadow>[
+                                    Shadow(color: Colors.black,blurRadius:5.0, offset: Offset(2, 5))
+                                  ],)),
+                                  FixedSizeText(songDetail['description'],maxLines:3,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:10.0,color:Colors.white60)),
+                                  Container(
+                                      margin:EdgeInsets.fromLTRB(0, 20.0,0.0, 20.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(30),
+                                            child: Container(
+                                              width:30.0,
+                                              height:30.0,
+                                              child: new CachedNetworkImage(
+                                                imageUrl: songDetail.isEmpty?"":songDetail['creator']['avatarUrl'],//item['picUrl'],
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin:EdgeInsets.all(5),
-                                        child:   FixedSizeText(songDetail.isEmpty?"":songDetail['creator']['nickname'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:12.0,color:Colors.white)),
-                                      ),
+                                          Container(
+                                            margin:EdgeInsets.all(5),
+                                            child:FixedSizeText(songDetail.isEmpty?"":songDetail['creator']['nickname'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:12.0,color:Colors.white)),
+                                          ),
 
-                                    ],
-                                  )
-                              ) ,
-                            ],
-                          )  ,
-                        ),
+                                        ],
+                                      )
+                                  ) ,
+                                ],
+                              )  ,
+                            ),
+                          ),
+
+                        ],
+
                       ),
+                    ),
+                    Container(
+                      padding:EdgeInsets.fromLTRB(30.0,0.0,30.0,0.0),
+                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){},
+                          child:Column(
+                            children: <Widget>[
+                              Icon(Icons.insert_comment,color:Colors.white60,size:30.0),
+                              FixedSizeText(tranNumber(songDetail['commentCount']),style:TextStyle(fontSize:12.0,color:Colors.white60))
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){},
+                          child:Column(
+                            children: <Widget>[
+                              Icon(Icons.share,color:Colors.white60,size:30.0),
+                              FixedSizeText(tranNumber(songDetail['shareCount']),style:TextStyle(fontSize:12.0,color:Colors.white60))
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){},
+                          child:Column(
+                            children: <Widget>[
+                              Icon(Icons.cloud_download,color:Colors.white60,size:30.0),
+                              FixedSizeText("下载",style:TextStyle(fontSize:11.0, color:Colors.white60))
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){},
+                          child:Column(
+                            children: <Widget>[
+                              Icon(Icons.check_circle_outline,color:Colors.white60,size:30.0),
+                              FixedSizeText("多选",style:TextStyle(fontSize:11.0, color:Colors.white60))
+                            ],
+                          ),
+                        ),
 
-                    ],
+                      ],
+                     ),
+                    )
+                  ],
+                ),
 
-                  ),
-                )
               ],
             ),
 
 
     );
-
 
     //歌曲列表
     Widget songs=Container(
@@ -273,14 +340,94 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
       child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
-                padding: EdgeInsets.all(15.0),
-                color:Colors.white,
-                height:1000.0,
-                child:Column(
-                  children: <Widget>[
-                    Text("5555")
-                  ],
-                )
+                padding: EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
+                constraints: BoxConstraints(
+                  minHeight: 450,
+                ),
+                  color:Colors.white,
+                  child:songDetail.isEmpty?Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width:15.0,
+                        height:15.0,
+                        margin:EdgeInsets.all(5.0),
+                        child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
+                      ),
+                      FixedSizeText("读取歌单中...",textAlign:TextAlign.center,style:TextStyle(height:1,fontSize:12.0))
+                    ],
+                  ): Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Center(
+                        child:SizedBox(
+                          height:35.0,
+                          child:FlatButton.icon(onPressed: (){}, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(22.0))),highlightColor:Colors.transparent, splashColor:Colors.black12, icon: Icon(Icons.play_circle_outline,color:Colors.black,size:35.0,), label:FixedSizeText("播放全部(${songDetail['tracks'].length}首)", style:TextStyle(color:Colors.black,fontSize:14.0),)) ,
+                        ) ,
+                      ),
+                      Divider(
+                        height:28.0,
+                      ),
+                      Column(
+                        children: songLists.asMap().keys.map((index){
+                          return  Material(
+                            color:Colors.transparent,
+                            child: InkWell(
+                              onTap: (){},
+
+                              child:  Container(
+                                margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
+                                padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
+                                child:  Row(
+                                  crossAxisAlignment:CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 1,
+                                      child: FixedSizeText((index+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:Colors.grey,fontSize:20.0)),
+                                    ),
+                                    Expanded(
+                                      flex: 6,
+                                      child:Column(
+                                        crossAxisAlignment:CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          FixedSizeText(songLists[index]['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:13.0)),
+                                          FixedSizeText(songLists[index]['ar'][0]['name'],maxLines:1,overflow:TextOverflow.ellipsis,style:TextStyle(color:Colors.grey,fontSize:12.0)),
+                                        ],
+                                      ) ,
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child:Visibility(
+                                          child: Align(
+                                            alignment:Alignment.topRight,
+                                            child:  InkWell(onTap: (){},child:Icon(Icons.music_video,color:Colors.redAccent,)),
+                                          ),
+                                          visible:songLists[index]['mv']>0,
+                                        )
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child:Align(
+                                          alignment:Alignment.topRight,
+                                          child: InkWell(onTap: (){}, child:Icon(Icons.more_vert,color:Colors.grey,)),
+                                        )
+                                    ),
+                                  ],
+
+                                ),
+                              ),
+                            ),
+                          );
+
+                        }).toList(),
+                      ),
+                      Center(
+                        child:FixedSizeText('~没有了呦~',textAlign:TextAlign.center,style:TextStyle(color:Colors.grey,fontSize:12.0),)
+                      )
+
+                    ],
+                  )
             ),
           ),
     );
@@ -307,7 +454,10 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                 appBar:appNav ,
                 body:mainWarp
             ),
-
+            Align(
+                alignment: Alignment.bottomCenter,
+                child:mPlayPanel
+            ),
            ],
         ),
 

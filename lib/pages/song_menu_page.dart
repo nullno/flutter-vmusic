@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_vmusic/conf/router.dart';
 import 'package:flutter_vmusic/utils/tool.dart';
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -70,9 +70,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
     _scrollController.addListener(() {
       var maxScroll = _scrollController.position.maxScrollExtent.toStringAsFixed(0);
       var pixel = _scrollController.position.pixels.toStringAsFixed(0);
-      
-      print(maxScroll == pixel);
-      print(loadMore["hasMore"]);
+
       if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
 
         setState(() {
@@ -143,6 +141,11 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
       return new Center(
         widthFactor:12.0,
         child:Loading(indicator: LineScalePulseOutIndicator(), size: 50.0),
+      );
+    }
+    Widget _loaderImgBlank(BuildContext context, String url) {
+      return new Center(
+        child:Icon(Icons.image,size:158,color: Colors.grey,)
       );
     }
 
@@ -216,12 +219,16 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                             return  Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                ClipRRect(
+                                InkWell(
+                                onTap: (){
+                                    Router.fadeNavigator(context,"/songmenulist",{'id':item['id'],'from':'/songmenu'},(res){});
+                                  },
+                                child: ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: Stack(
                                       children: <Widget>[
                                         new CachedNetworkImage(
-                                          placeholder: _loaderImg,
+                                          placeholder: _loaderImgBlank,
                                           imageUrl:item['coverImgUrl'],//item['picUrl'],
                                           fit: BoxFit.cover,
                                         ),
@@ -237,6 +244,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                                         )
                                       ],
                                     )
+                                ),
                                 ),
                                 Container(
                                   padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),

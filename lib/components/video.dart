@@ -60,7 +60,6 @@ class _VideoList extends State<VideoList>{
       var maxScroll = _scrollController.position.maxScrollExtent.toStringAsFixed(0);
       var pixel = _scrollController.position.pixels.toStringAsFixed(0);
 
-      print(loadMore["isScrollBottom"]);
       if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
 
         setState(() {
@@ -170,8 +169,7 @@ class _VideoList extends State<VideoList>{
 
     Widget _loaderImg(BuildContext context, String url) {
       return new Center(
-        widthFactor:12.0,
-        child:Icon(Icons.hdr_weak,size:75.0,color:Colors.grey,),
+        child:Icon(Icons.image,size:88.0,color:Colors.grey,),
       );
     }
 
@@ -328,7 +326,6 @@ class _VideoList extends State<VideoList>{
     return  Material(
 
         child:loadState!=1?Center(child:loadState==0?Loading(indicator: LineScalePulseOutIndicator(), size: 50.0):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
-          color:Colors.deepPurple,
           key: _refreshIndicatorKey,
           onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调
           child:  ListView(

@@ -30,7 +30,6 @@ void getBanner(resolve,reject) async {
 //歌曲排行榜
 void getRank(resolve,reject) async {
   try {
-
     List<Response> response = await Future.wait([
         dio.get("/playlist/detail",queryParameters:{"id":"4395559"}),
         dio.get("/playlist/detail",queryParameters:{"id":"2617766278"}),

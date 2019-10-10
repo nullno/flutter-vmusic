@@ -4,7 +4,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-
+import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 
 class PlayPanel extends StatefulWidget{
   final Map params;
@@ -41,6 +41,7 @@ class _PlayPanel extends State<PlayPanel>{
       decoration: BoxDecoration(color:Color.fromRGBO(255, 255, 255, 0.95)),
       child:  new Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment:CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
             padding:EdgeInsets.fromLTRB(4.0,0,5.0,0),
@@ -55,8 +56,8 @@ class _PlayPanel extends State<PlayPanel>{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('来自天堂的魔鬼', overflow: TextOverflow.ellipsis,style:TextStyle(fontSize:13.0),),
-                  Text('G.E.M.邓紫棋--新的心跳',style:TextStyle(color:Colors.black45,fontSize:12.0)),
+                  FixedSizeText('来自天堂的魔鬼', overflow: TextOverflow.ellipsis,style:TextStyle(fontSize:13.0),),
+                  FixedSizeText('G.E.M.邓紫棋--新的心跳',style:TextStyle(color:Colors.black45,fontSize:11.0)),
                 ],
               )
           ),

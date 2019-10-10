@@ -8,7 +8,7 @@ import 'package:flutter_vmusic/components/find.dart';
 import 'package:flutter_vmusic/components/video.dart';
 
 import 'package:flutter_vmusic/conf/platform.dart';
-
+import 'package:flutter_vmusic/conf/router.dart';
 
 
 class HomePage extends StatefulWidget{
@@ -135,7 +135,10 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
                      Expanded(
                          flex: 1,
                          child:IconButton(
-                           onPressed: (){},
+                           onPressed: (){
+                             Router.fadeNavigator(context,"/searchpage",{'des':'','from':'/find'},(res){});
+
+                           },
                            color:Colors.redAccent,
                            icon:Icon(Icons.search,color: Colors.black,size:25.0),
                          )

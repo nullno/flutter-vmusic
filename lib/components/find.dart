@@ -145,10 +145,10 @@ await   getPersonalizedSongList((res){
       );
     }
 
-    Widget _loaderImg(BuildContext context, String url) {
+    Widget _loaderImgBlank(BuildContext context, String url) {
       return new Center(
         widthFactor:12.0,
-        child:Icon(Icons.headset,size:75.0,color:Colors.grey,),
+        child:Icon(Icons.image,size:158,color: Colors.grey,)
       );
     }
 
@@ -194,10 +194,15 @@ await   getPersonalizedSongList((res){
                     borderRadius: BorderRadius.circular(50),
                     child: Stack(
                       children: <Widget>[
-                        new CachedNetworkImage(
-                          imageUrl:item['playlist']['coverImgUrl'],//item['playlist']['coverImgUrl'],
-                          fit: BoxFit.cover,
-                        ),
+                          InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':item['playlist']['id'],'from':'/find'},(res){});
+                           },
+                          child: new CachedNetworkImage(
+                                        imageUrl:item['playlist']['coverImgUrl'],//item['playlist']['coverImgUrl'],
+                                        fit: BoxFit.cover,
+                                      ),
+                          )
                        /* Positioned(
                           left:20.0,
                           bottom:3.0,
@@ -270,7 +275,7 @@ await   getPersonalizedSongList((res){
                         child: Stack(
                           children: <Widget>[
                             new CachedNetworkImage(
-                              placeholder: _loaderImg,
+                              placeholder: _loaderImgBlank,
                               errorWidget: _error,
                               imageUrl:item['picUrl'],//item['picUrl'],
                               fit: BoxFit.cover,
@@ -309,7 +314,6 @@ await   getPersonalizedSongList((res){
     return  Material(
 //        255, 240,62,57
       child:loadState!=1?Center(child:loadState==0?Loading(indicator: LineScaleIndicator(), size: 50.0):Icon(Icons.cloud_off,size:40.0,)):RefreshIndicator(
-        color:Colors.deepPurple,
         key: _refreshIndicatorKey,
         onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调
         child:  ListView(
