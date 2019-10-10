@@ -99,11 +99,10 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
        status = 1;
        adList = res['banners'];
        _adController();
-
-   },(err){
-    status = 2;
-     print(err);
-   });
+     },(err){
+      status = 2;
+       print(err);
+     });
 
    //获取热歌榜
 await  getRank((res){
@@ -138,6 +137,7 @@ await   getPersonalizedSongList((res){
         ),
       );
     }
+
     Widget _error(BuildContext context, String url, Object error) {
 //      print(error);
       return new Center(

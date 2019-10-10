@@ -44,7 +44,6 @@ class _PlayPanel extends State<PlayPanel>{
         children: <Widget>[
           Padding(
             padding:EdgeInsets.fromLTRB(4.0,0,5.0,0),
-
             child: CircleAvatar(
               radius:20,
               backgroundColor:Colors.black45,

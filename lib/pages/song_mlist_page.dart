@@ -124,7 +124,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            FixedSizeText( songDetail.isEmpty?"loading...":songDetail['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
+                            FixedSizeText("歌单",maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
                             FixedSizeText( songDetail.isEmpty?"":songDetail['description'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0),),
                           ],
                         ),
@@ -182,37 +182,79 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                 ),
               ),
                 Container(
+                  padding:EdgeInsets.all(15.0),
+                  height:180.0,
                   child: Row(
+                     crossAxisAlignment:CrossAxisAlignment.start,
+                     mainAxisAlignment:MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                            ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child:
-                                Container(
-                                  width:150.0,
-                                  height:150.0,
-                                  child:Stack(
+                      Expanded(
+                        flex: 2,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child:
+                          Container(
+                            child:Stack(
+                              children: <Widget>[
+                                new CachedNetworkImage(
+                                  imageUrl: songDetail.isEmpty?"":songDetail['coverImgUrl'],//item['picUrl'],
+                                  fit: BoxFit.cover,
+                                  width:double.infinity,
+                                ),
+                                Positioned(
+                                  top:3.0,
+                                  right:3.0,
+                                  child:Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
-                                      new CachedNetworkImage(
-                                        placeholder: _loaderImg,
-                                        imageUrl: songDetail.isEmpty?"":songDetail['coverImgUrl'],//item['picUrl'],
-                                        fit: BoxFit.cover,
-                                        width:double.infinity,
-                                      ),
-                                      Positioned(
-                                        top:3.0,
-                                        right:3.0,
-                                        child:Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Icon(Icons.play_arrow,color:Colors.black,size:12.0,),
-                                            FixedSizeText(tranNumber(songDetail.isEmpty?0:songDetail['playCount']),style:TextStyle(color:Colors.black,fontSize:12.0))
-                                          ],
-                                        ),
-                                      )
+                                      Icon(Icons.play_arrow,color:Colors.black,size:12.0,),
+                                      FixedSizeText(tranNumber(songDetail.isEmpty?0:songDetail['playCount']),style:TextStyle(color:Colors.black,fontSize:12.0))
                                     ],
                                   ),
-                                ),
-                              )
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child:Container(
+                          padding:EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              FixedSizeText(songDetail.isEmpty?"":songDetail['name'],maxLines:2,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:20.0,color:Colors.white)),
+                              FixedSizeText(songDetail.isEmpty?"":songDetail['description'],maxLines:2,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:10.0,color:Colors.white)),
+                              Container(
+                                  margin:EdgeInsets.fromLTRB(0, 20.0,0.0, 20.0),
+                                  child: Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Container(
+                                          width:30.0,
+                                          height:30.0,
+
+                                          child: new CachedNetworkImage(
+                                            imageUrl: songDetail.isEmpty?"":songDetail['creator']['avatarUrl'],//item['picUrl'],
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin:EdgeInsets.all(5),
+                                        child:   FixedSizeText(songDetail.isEmpty?"":songDetail['creator']['nickname'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:12.0,color:Colors.white)),
+                                      ),
+
+                                    ],
+                                  )
+                              ) ,
+                            ],
+                          )  ,
+                        ),
+                      ),
 
                     ],
 
