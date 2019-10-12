@@ -38,7 +38,7 @@ void search(parameters,resolve,reject) async {
 //搜索建议
 void searchSuggest(parameters,resolve,reject) async {
   try {
-    Response<dynamic> response = await dio.get("/search/suggest",queryParameters:{"keywords":parameters['offset'],"type":"mobile"});
+    Response<dynamic> response = await dio.get("/search/suggest",queryParameters:{"keywords":parameters['keywords'],"type":"mobile"});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);

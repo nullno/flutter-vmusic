@@ -3,7 +3,6 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_vmusic/utils/tool.dart';
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
@@ -32,6 +31,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   //歌单详情
   Map songDetail =  new Map();
   List<dynamic> hotRankLists = [];
+  List<dynamic> suggestLists = [];
   List<dynamic> songLists = [];
   //加载状态
   int loadState   = 0; //0加载中 1加载成功 2加载失败
@@ -39,11 +39,28 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   //搜索状态
   int searchState = 0; //0未搜索 1搜索完成
 
+
+  //关键字
+  Map seachParam = {
+    "keywords":'',
+    "offset":0,
+    "type":1018
+  };
+
+  //初始化滚动监听器，加载更多使用
+  ScrollController _scrollController = new ScrollController();
+  //搜索框控制控制器
+  TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-
-    print(widget.params);
+    _scrollController.addListener(() {
+      FocusScope.of(context).requestFocus(FocusNode());
+      setState(() {
+        suggestLists.clear();
+      });
+    });
     _flashData();
 
   }
@@ -62,7 +79,6 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   //获取数据
   void getData(complete) async{
     var status = 0;
-
     //热搜榜详细列表
     await  searchHot((res){
       hotRankLists=res['data'];
@@ -113,56 +129,90 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                       ),
                       Expanded(
                         flex: 5,
-                        child:Container(
-                          alignment:Alignment.center,
-                          height:30.0,
-                          padding: EdgeInsets.all(0.0),
-                          decoration: new BoxDecoration(
-                            border: new Border.all(width: 1.0, color: Colors.grey),
-                            color: Colors.transparent,
-                            borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-                          ),
-                          child:TextField(
-                              cursorWidth:1.5,
-                              cursorColor:Colors.black,
-                              cursorRadius:Radius.circular(1.0),
-                              onChanged: (val) {
-                                print(val);
-                              },
-                            textAlignVertical:TextAlignVertical.center,
-                              decoration: InputDecoration(
-                                contentPadding:EdgeInsets.fromLTRB(10.0,15.0,0,0.0),
-                                hintText:'请输入关键词...',
-                                suffixIcon:  ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                   child: Material(
-                                        color:Colors.white,
-                                        child:InkWell(
-                                          onTap: (){
-                                            //清楚搜索框
-                                             print('scc');
-                                           },
-                                        child:Icon(Icons.clear,color:Colors.grey,size:15.0)) ,
-                                    )
+                        child: Container(
+                              alignment:Alignment.center,
+                              height:30.0,
+                              padding: EdgeInsets.all(0.0),
+                              decoration: new BoxDecoration(
+                                border: new Border.all(width: 1.0, color: Colors.grey),
+                                color: Colors.transparent,
+                                borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
+                              ),
+                              child:TextField(
+                                controller: _searchController,
+                                cursorWidth:1.5,
+                                cursorColor:Colors.black,
+                                cursorRadius:Radius.circular(1.0),
+                                textInputAction:TextInputAction.search,
+                                onChanged: (val) {
+                                  setState(() {
+                                    seachParam['keywords']=val;
+                                  });
+                                  if(val!=''){
+                                    //搜索建议
+                                    searchSuggest({"keywords":val},(res){
+                                      setState(() {
+                                       if(!res['result'].isEmpty) {
+                                          suggestLists=res['result']['allMatch'];
+                                      }else{
+                                             suggestLists.clear();
+                                         }
+                                      });
+                                    },(err){
+                                      print(err);
+                                    });
+                                  }else{
+                                    setState(() {
+                                      suggestLists.clear();
+                                      seachParam['keywords']='';
+                                    });
+                                  }
+                                },
+                                onSubmitted: (val) {//内容提交(按回车)的回调
+
+                                },
+
+                                textAlignVertical:TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                  contentPadding:EdgeInsets.fromLTRB(10.0,15.0,0,0.0),
+                                  hintText:'请输入关键词...',
+                                  suffixIcon:Visibility(
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Material(
+                                          color:Colors.white,
+                                          child:InkWell(
+                                              onTap: (){
+                                                //清除搜索框
+                                                _searchController.clear();
+                                                setState(() {
+                                                  suggestLists.clear();
+                                                  seachParam['keywords']='';
+                                                });
+                                              },
+                                              child:Icon(Icons.clear,color:Colors.grey,size:15.0)) ,
+                                        )
+                                    ),
+                                   visible: seachParam['keywords']!=''
                                   ),
-                                enabledBorder:OutlineInputBorder(
-                                  gapPadding:0.0,
-                                  borderRadius:BorderRadius.all(Radius.circular(20.0)),
-                                  borderSide: BorderSide(
-                                      color:Colors.transparent,
-                                      style:BorderStyle.none
-                                  ),),
-                                border: OutlineInputBorder(
-                                  gapPadding:0.0,
-                                  borderRadius:BorderRadius.all(Radius.circular(20.0)),
-                                  borderSide: BorderSide(
-                                    color:Colors.transparent,
-                                    style:BorderStyle.none
+                                  enabledBorder:OutlineInputBorder(
+                                    gapPadding:0.0,
+                                    borderRadius:BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(
+                                        color:Colors.transparent,
+                                        style:BorderStyle.none
+                                    ),),
+                                  border: OutlineInputBorder(
+                                    gapPadding:0.0,
+                                    borderRadius:BorderRadius.all(Radius.circular(20.0)),
+                                    borderSide: BorderSide(
+                                        color:Colors.transparent,
+                                        style:BorderStyle.none
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                        ),
                       ),
                       Expanded(
                           flex: 1,
@@ -199,15 +249,16 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           SizedBox(
             height:30,
             width:75,
-            child: FlatButton.icon(padding: EdgeInsets.all(0), icon: Icon(Icons.whatshot,color:Colors.red), label: FixedSizeText("热歌榜",textAlign:TextAlign.left,style:TextStyle(height:1,fontSize:15.0,fontWeight:FontWeight.bold))),
+            child: FlatButton.icon(padding: EdgeInsets.all(0), icon: Icon(Icons.whatshot,color:Colors.red), label: FixedSizeText("热搜榜",textAlign:TextAlign.left,style:TextStyle(height:1,fontSize:15.0,fontWeight:FontWeight.bold))),
           ),
-          hotRankLists.length>0?
           Column(
             children: hotRankLists.asMap().keys.map((index){
               return  Material(
                 color:Colors.transparent,
                 child: InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
                   child:  Container(
                     margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
                     padding:EdgeInsets.fromLTRB(10.0,0.0,15.0,0.0) ,
@@ -230,14 +281,12 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                                   FixedSizeText(hotRankLists[index]['searchWord'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:13.0)),
                                   Padding(
                                     padding:EdgeInsets.all(5.0),
-                                    child: FixedSizeText(hotRankLists[index]['score'].toString(),maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Color(0xFFCEC9C9),fontSize:10.0,fontStyle:FontStyle.italic)),
+                                    child: FixedSizeText(hotRankLists[index]['score'].toString(),maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Color(0xFFCEC9C9),fontSize:9.0,fontStyle:FontStyle.italic)),
                                   ),
                                   SizedBox(
                                     height:15.0,
                                     child:hotRankLists[index]['iconUrl']!=null?Image.network(hotRankLists[index]['iconUrl']):Container(),
                                   ),
-
-
                                 ]) ,
                                 FixedSizeText(hotRankLists[index]['content'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0)),
                               ]
@@ -251,13 +300,49 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
               );
 
             }).toList(),
-          ):Container(),
+          ),
 
         ],
       ),
     );
 
+   //搜索建议
+    Widget Suggest = Positioned(
+      top:40.0,
+      child:Container(
+        width:250,
+        padding:EdgeInsets.all(10.0),
+        decoration: new BoxDecoration(
+            color:Colors.white,
+            borderRadius: new BorderRadius.all(Radius.circular(2.0)),//设置圆
+            boxShadow: <BoxShadow>[new BoxShadow(color: Colors.grey, blurRadius: 5.0)]
+        ),
+        child:Column(
+          crossAxisAlignment:CrossAxisAlignment.start,
+          children:  suggestLists.map((item){
+            return  Material(
+              color:Colors.transparent,
+              child: InkWell(
+                onTap: (){
+                  _searchController.value=TextEditingValue(text:item['keyword']);
+                   FocusScope.of(context).requestFocus(FocusNode());
+                   setState(() {
+                     suggestLists.clear();
+                   });
 
+                },
+                child:Container(
+                  width:double.infinity,
+                  padding:EdgeInsets.only(top:10.0,bottom:10.0),
+                  child:  Text(item['keyword']),
+                ),
+              ) ,
+            );
+          }).toList()
+
+        ),
+      ) ,
+    );
     //歌曲列表
     Widget songs=Container(
       color:Colors.transparent,
@@ -360,30 +445,45 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
 
     //主内容区
     Widget mainWarp= ListView(
+      controller: _scrollController,
       children: <Widget>[
-        HotRank
+        hotRankLists.length>0&&searchState==0?HotRank:Container(),
       ],
     );
+
 
 
     //主内容区
     return  Material(
       color:Colors.white,
-      child: new Stack(
+      child:SafeArea(
+        child: GestureDetector(
+//        behavior: HitTestBehavior.translucent,
+         onTap: () {
+           // 触摸收起键盘
+             print('vdv');
+             FocusScope.of(context).requestFocus(FocusNode());
+            },
+          child: new Stack(
+          alignment:Alignment.bottomCenter,
           children: <Widget>[
             Scaffold(
                 appBar:appNav ,
                 body:mainWarp
             ),
-
+            suggestLists.length>0?Suggest:Container(),
           ],
-        ),
+          ) ,
+        )
 
+      )
     );
   }
   @override
   void dispose() {
     super.dispose();
+    _scrollController.dispose();
+    _searchController.dispose();
   }
 
 }

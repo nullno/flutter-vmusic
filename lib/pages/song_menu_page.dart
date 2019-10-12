@@ -287,6 +287,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
   @override
   void dispose() {
     super.dispose();
+    _scrollController.dispose();
   }
 
 }

@@ -331,7 +331,7 @@ class _VideoList extends State<VideoList>{
           child:  ListView(
             controller: _scrollController,
 //            primary: true,
-            physics: const AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             padding:const EdgeInsets.fromLTRB(0.0,0.0,0.0,60.0),
             children: <Widget>[
               Container(
@@ -371,5 +371,6 @@ class _VideoList extends State<VideoList>{
   @override
   void dispose() {
     super.dispose();
+    _scrollController.dispose();
   }
 }

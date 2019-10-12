@@ -318,7 +318,7 @@ await   getPersonalizedSongList((res){
         onRefresh: _flashData, // onRefresh 参数是一个 Future<Null> 的回调
         child:  ListView(
           primary: true,
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding:const EdgeInsets.fromLTRB(0.0,0.0,0.0,60.0),
           children: <Widget>[
             Container(
