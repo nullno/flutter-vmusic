@@ -28,7 +28,8 @@ class SongMenuList extends StatefulWidget{
 
 class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMixin{
 
-
+  //顶部标题
+  int topTitleStatus = 0;
   //歌单详情
   Map songDetail =  new Map();
   List<dynamic> songLists = [];
@@ -36,18 +37,34 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
   int loadState   = 0; //0加载中 1加载成功 2加载失败
   //下拉刷新
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKeySong = new GlobalKey<RefreshIndicatorState>();
+  //初始化滚动监听器，加载更多使用
+  ScrollController _scrollController = new ScrollController();
 
 
 
   @override
   void initState() {
     super.initState();
-
+    changTitle();
     print(widget.params);
     _flashData();
 
   }
-
+//  滑动切换标题
+  changTitle(){
+    _scrollController.addListener(() {
+      var pixel = _scrollController.position.pixels;
+      if (pixel >200) {
+        setState(() {
+          topTitleStatus=1;
+        });
+      } else  if(topTitleStatus!=0){
+        setState(() {
+          topTitleStatus=0;
+        });
+      }
+    });
+  }
 
   //  刷新获取数据
   Future<Null> _flashData(){
@@ -99,12 +116,12 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     Widget appNav =PreferredSize(
       preferredSize: Size.fromHeight(40.0),
       child:AppBar(
-        backgroundColor:Colors.black,
+        backgroundColor:topTitleStatus==1?Colors.white:Colors.black,
         elevation: 0,
-        brightness: Brightness.dark,
+        brightness:topTitleStatus==1?Brightness.light:Brightness.dark,
         bottom:PreferredSize(
             child:Container(
-              color:Colors.black,
+              color:topTitleStatus==1?Colors.white:Colors.black,
               width: double.infinity,
               height:40.0,
               child:Material(
@@ -119,7 +136,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                         onPressed: (){
                                 Navigator.pop(context);
                         },
-                        icon:Icon(Icons.arrow_back,color: Colors.white,size:25.0),
+                        icon:Icon(Icons.arrow_back,color: topTitleStatus==0?Colors.white:Colors.black,size:25.0),
                       ),
                     ),
                     Expanded(
@@ -130,7 +147,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            FixedSizeText("歌单",maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),),
+                            FixedSizeText(topTitleStatus==1?songDetail['name']:"歌单",maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:topTitleStatus==0?Colors.white:Colors.black),),
                             FixedSizeText( songDetail.isEmpty?"Loading...":songDetail['description'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0),),
                           ],
                         ),
@@ -146,7 +163,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                                    });
                           },
                           color:Colors.redAccent,
-                          icon:Icon(Icons.more_vert,color: Colors.white,size:25.0),
+                          icon:Icon(Icons.more_vert,color: topTitleStatus==0?Colors.white:Colors.black,size:25.0),
 
                         )
                     )
@@ -159,7 +176,6 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     ),
       )
     );
-
 
     //头部信息
     Widget headInfo= Container(
@@ -340,7 +356,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
       child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
-                padding: EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
+                padding: EdgeInsets.fromLTRB(0.0,15.0,0.0,50.0),
                 constraints: BoxConstraints(
                   minHeight: 450,
                 ),
@@ -435,6 +451,8 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
 
     //主内容区
     Widget mainWarp= ListView(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
       children: <Widget>[
         headInfo,
         songs

@@ -19,13 +19,42 @@ Dio dio = new Dio(options); // with default Options
 //banner
 void getBanner(resolve,reject) async {
   try {
-
     Response<dynamic> response = await dio.get("/banner",queryParameters:{"types": "1",});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);
   }
 }
+
+//搜索
+void search(parameters,resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/search",queryParameters:{"keywords":parameters['keywords'],"limit": 30,"offset":parameters['offset'],"type":parameters["type"]});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+//搜索建议
+void searchSuggest(parameters,resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/search/suggest",queryParameters:{"keywords":parameters['offset'],"type":"mobile"});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//搜索建议
+void searchHot(resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/search/hot/detail",);
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
 
 //歌曲排行榜
 void getRank(resolve,reject) async {

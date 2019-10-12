@@ -3,7 +3,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_vmusic/utils/tool.dart';
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -32,9 +31,13 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
 
   //歌单详情
   Map songDetail =  new Map();
+  List<dynamic> hotRankLists = [];
   List<dynamic> songLists = [];
   //加载状态
   int loadState   = 0; //0加载中 1加载成功 2加载失败
+
+  //搜索状态
+  int searchState = 0; //0未搜索 1搜索完成
 
   @override
   void initState() {
@@ -47,35 +50,26 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
 
 
   //  刷新获取数据
-  Future<Null> _flashData(){
-    final Completer<Null> completer = new Completer<Null>();
-
+    _flashData(){
     getData((status){
       setState(() {
         loadState=status;
-        completer.complete(null);
+
       });
     });
-
-
-    return completer.future;
   }
 
   //获取数据
   void getData(complete) async{
     var status = 0;
 
-    // 获取推荐歌单
-    await  getSongDetail({"id":widget.params['id']},(res){
-
-      songDetail=res['playlist'];
-      songLists=res['playlist']['tracks'];
-
+    //热搜榜详细列表
+    await  searchHot((res){
+      hotRankLists=res['data'];
     },(err){
       status = 2;
       print(err);
     });
-
     complete(status);
   }
 
@@ -122,23 +116,48 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                         child:Container(
                           alignment:Alignment.center,
                           height:30.0,
-                          padding: EdgeInsets.all(5.0),
+                          padding: EdgeInsets.all(0.0),
                           decoration: new BoxDecoration(
                             border: new Border.all(width: 1.0, color: Colors.grey),
                             color: Colors.transparent,
                             borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
                           ),
                           child:TextField(
-                              cursorWidth:1.0,
+                              cursorWidth:1.5,
                               cursorColor:Colors.black,
-
+                              cursorRadius:Radius.circular(1.0),
+                              onChanged: (val) {
+                                print(val);
+                              },
+                            textAlignVertical:TextAlignVertical.center,
                               decoration: InputDecoration(
-                                fillColor:Colors.redAccent,
-                                border: OutlineInputBorder(
-
+                                contentPadding:EdgeInsets.fromLTRB(10.0,15.0,0,0.0),
+                                hintText:'请输入关键词...',
+                                suffixIcon:  ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                   child: Material(
+                                        color:Colors.white,
+                                        child:InkWell(
+                                          onTap: (){
+                                            //清楚搜索框
+                                             print('scc');
+                                           },
+                                        child:Icon(Icons.clear,color:Colors.grey,size:15.0)) ,
+                                    )
+                                  ),
+                                enabledBorder:OutlineInputBorder(
+                                  gapPadding:0.0,
+                                  borderRadius:BorderRadius.all(Radius.circular(20.0)),
                                   borderSide: BorderSide(
-                                    color: Colors.redAccent,
-                                    width:2.0
+                                      color:Colors.transparent,
+                                      style:BorderStyle.none
+                                  ),),
+                                border: OutlineInputBorder(
+                                  gapPadding:0.0,
+                                  borderRadius:BorderRadius.all(Radius.circular(20.0)),
+                                  borderSide: BorderSide(
+                                    color:Colors.transparent,
+                                    style:BorderStyle.none
                                   ),
                                 ),
                               ),
@@ -168,6 +187,75 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
         )
     );
 
+    //历史纪录
+
+    //热搜榜
+    Widget HotRank = Container(
+      padding: EdgeInsets.all(15.0),
+      color:Colors.white,
+      child:Column(
+        crossAxisAlignment:CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height:30,
+            width:75,
+            child: FlatButton.icon(padding: EdgeInsets.all(0), icon: Icon(Icons.whatshot,color:Colors.red), label: FixedSizeText("热歌榜",textAlign:TextAlign.left,style:TextStyle(height:1,fontSize:15.0,fontWeight:FontWeight.bold))),
+          ),
+          hotRankLists.length>0?
+          Column(
+            children: hotRankLists.asMap().keys.map((index){
+              return  Material(
+                color:Colors.transparent,
+                child: InkWell(
+                  onTap: (){},
+                  child:  Container(
+                    margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
+                    padding:EdgeInsets.fromLTRB(10.0,0.0,15.0,0.0) ,
+                    child:
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: FixedSizeText((index+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:index<3?Colors.red:Colors.grey,fontSize:14.0)),
+                        ),
+                        Expanded(
+                          flex: 10,
+                          child:Column(
+                              crossAxisAlignment:CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                crossAxisAlignment:CrossAxisAlignment.center,
+                                mainAxisAlignment:MainAxisAlignment.start,
+                                children: <Widget>[
+                                  FixedSizeText(hotRankLists[index]['searchWord'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:13.0)),
+                                  Padding(
+                                    padding:EdgeInsets.all(5.0),
+                                    child: FixedSizeText(hotRankLists[index]['score'].toString(),maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Color(0xFFCEC9C9),fontSize:10.0,fontStyle:FontStyle.italic)),
+                                  ),
+                                  SizedBox(
+                                    height:15.0,
+                                    child:hotRankLists[index]['iconUrl']!=null?Image.network(hotRankLists[index]['iconUrl']):Container(),
+                                  ),
+
+
+                                ]) ,
+                                FixedSizeText(hotRankLists[index]['content'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.grey,fontSize:10.0)),
+                              ]
+                          )
+                        ),
+                      ],
+
+                    ),
+                  ),
+                ),
+              );
+
+            }).toList(),
+          ):Container(),
+
+        ],
+      ),
+    );
 
 
     //歌曲列表
@@ -214,7 +302,8 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                         child:  Container(
                           margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
                           padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
-                          child:  Row(
+                          child:
+                          Row(
                             crossAxisAlignment:CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -272,7 +361,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     //主内容区
     Widget mainWarp= ListView(
       children: <Widget>[
-        songs
+        HotRank
       ],
     );
 
