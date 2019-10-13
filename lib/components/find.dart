@@ -259,7 +259,7 @@ await   getPersonalizedSongList((res){
             padding: EdgeInsets.fromLTRB(0.0,10.0,0.0,0.0),
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 0.8,
+            childAspectRatio: 0.75,
             crossAxisCount: 2,
             shrinkWrap: true,
             children: songLists.map((item){

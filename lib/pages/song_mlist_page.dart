@@ -46,7 +46,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
   void initState() {
     super.initState();
     changTitle();
-    print(widget.params);
+
     _flashData();
 
   }
@@ -450,36 +450,39 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
 
 
     //主内容区
-    Widget mainWarp= ListView(
-      controller: _scrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: <Widget>[
-        headInfo,
-        songs
-      ],
+    Widget mainWarp=RefreshIndicator(
+      key: _refreshIndicatorKeySong,
+      onRefresh: _flashData,
+      child: new Stack(
+        children: <Widget>[
+          ListView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: <Widget>[
+              headInfo,
+              songs
+            ],
+      ),
+      Align(
+          alignment: Alignment.bottomCenter,
+          child:mPlayPanel
+      ),
+      ]
+
+     )
     );
 
 
     //主内容区
     return  Material(
       color:Colors.white,
-      child: RefreshIndicator(
-        key: _refreshIndicatorKeySong,
-        onRefresh: _flashData,
-        child: new Stack(
-          children: <Widget>[
+      child:
             Scaffold(
                 appBar:appNav ,
                 body:mainWarp
             ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child:mPlayPanel
-            ),
-           ],
-        ),
 
-      ),
+
     );
   }
   @override

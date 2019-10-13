@@ -27,7 +27,7 @@ void getBanner(resolve,reject) async {
 }
 
 //搜索
-void search(parameters,resolve,reject) async {
+void search(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/search",queryParameters:{"keywords":parameters['keywords'],"limit": 30,"offset":parameters['offset'],"type":parameters["type"]});
     resolve(jsonDecode(response.toString()));
@@ -36,7 +36,7 @@ void search(parameters,resolve,reject) async {
   }
 }
 //搜索建议
-void searchSuggest(parameters,resolve,reject) async {
+void searchSuggest(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/search/suggest",queryParameters:{"keywords":parameters['keywords'],"type":"mobile"});
     resolve(jsonDecode(response.toString()));
@@ -45,8 +45,8 @@ void searchSuggest(parameters,resolve,reject) async {
   }
 }
 
-//搜索建议
-void searchHot(resolve,reject) async {
+//热搜榜
+void searchHot(resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/search/hot/detail",);
     resolve(jsonDecode(response.toString()));
@@ -57,7 +57,7 @@ void searchHot(resolve,reject) async {
 
 
 //歌曲排行榜
-void getRank(resolve,reject) async {
+void getRank(resolve,[reject]) async {
   try {
     List<Response> response = await Future.wait([
         dio.get("/playlist/detail",queryParameters:{"id":"4395559"}),
@@ -77,7 +77,7 @@ void getRank(resolve,reject) async {
 
 
 //获取推荐歌单
-void getPersonalizedSongList(resolve,reject) async {
+void getPersonalizedSongList(resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/personalized",queryParameters:{"limit": 20});
     resolve(jsonDecode(response.toString()));
@@ -86,7 +86,7 @@ void getPersonalizedSongList(resolve,reject) async {
   }
 }
 //精品歌单（歌单广场）
-void getHighqualitySongList(parameters,resolve,reject) async {
+void getHighqualitySongList(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/top/playlist/highquality",queryParameters:{"limit": 8,"before":parameters['before'],"cat":parameters["cat"]});
     resolve(jsonDecode(response.toString()));
@@ -96,7 +96,7 @@ void getHighqualitySongList(parameters,resolve,reject) async {
 }
 
 //获取歌单详情
-void getSongDetail(parameters,resolve,reject) async {
+void getSongDetail(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/playlist/detail",queryParameters:{"id":parameters["id"]});
     resolve(jsonDecode(response.toString()));
@@ -106,7 +106,7 @@ void getSongDetail(parameters,resolve,reject) async {
 }
 
 //获取推荐mv
-void getPersonalizedMV(resolve,reject) async {
+void getPersonalizedMV(resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/personalized/mv");
     resolve(jsonDecode(response.toString()));
@@ -115,7 +115,7 @@ void getPersonalizedMV(resolve,reject) async {
   }
 }
 //获取全部mv
-void getAllMV(parameters,resolve,reject) async {
+void getAllMV(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/mv/all",queryParameters:{"area":parameters['area'],"limit": 8,"offset":parameters['offset']});
     resolve(jsonDecode(response.toString()));
@@ -126,7 +126,7 @@ void getAllMV(parameters,resolve,reject) async {
 
 
 //获取视频播放数据
-void getMVDetail(mvId,resolve,reject) async {
+void getMVDetail(mvId,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/mv/detail",queryParameters:{"mvid":mvId});
     resolve(jsonDecode(response.toString()));

@@ -39,7 +39,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   void initState() {
     super.initState();
 
-    SYS.systemUI(Colors.transparent,Colors.white);
+    SYS.systemUI(Colors.transparent,Colors.black);
 
     //初始化controller并添加监听
     controller = TabController(initialIndex:0,length: tabList.length, vsync: this);
@@ -85,7 +85,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
      Widget appNav = PreferredSize(
        preferredSize: Size.fromHeight(40.0),
        child:AppBar(
-         backgroundColor:Colors.white12,
+         backgroundColor:Colors.white,
          elevation: 0,
          brightness: Brightness.light,
          bottom:PreferredSize(
@@ -136,7 +136,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
                          flex: 1,
                          child:IconButton(
                            onPressed: (){
-                             Router.fadeNavigator(context,"/searchpage",{'des':'','from':'/find'},(res){});
+                             Router.fadeNavigator(context,"/searchpage",{'seachParam':{},'from':'/find'},(res){});
 
                            },
                            color:Colors.redAccent,
@@ -193,6 +193,8 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
     super.dispose();
     controller.dispose();
   }
+  @override
+  bool get wantKeepAlive => true;
 
 }
 

@@ -9,8 +9,8 @@ class SYS {
     static systemUI(statusBarColor,navColor){
       if (Platform.isAndroid) {
         // 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
-        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
-        SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:statusBarColor,systemNavigationBarColor: navColor);
+        SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top,SystemUiOverlay.bottom]);
+        SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor:statusBarColor,systemNavigationBarIconBrightness: Brightness.dark,systemNavigationBarColor:statusBarColor);
         SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
       }
     }
