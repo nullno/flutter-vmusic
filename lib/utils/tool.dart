@@ -97,7 +97,6 @@ keywordsHighlight(String keywords,String str){
        });
    });
 
-   print(newArr);
 
  return RichText(
      text: TextSpan(style: TextStyle(fontSize: 13.0),

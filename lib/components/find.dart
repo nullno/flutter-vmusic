@@ -354,7 +354,8 @@ await   getPersonalizedSongList((res){
 
   @override
   void dispose() {
-    super.dispose();
+
     AdController.dispose();
+    super.dispose();
   }
 }

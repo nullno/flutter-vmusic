@@ -190,8 +190,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
 
   @override
   void dispose() {
-    super.dispose();
+
     controller.dispose();
+    super.dispose();
   }
   @override
   bool get wantKeepAlive => true;

@@ -370,7 +370,8 @@ class _VideoList extends State<VideoList>{
 
   @override
   void dispose() {
-    super.dispose();
+
     _scrollController.dispose();
+    super.dispose();
   }
 }

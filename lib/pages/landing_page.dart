@@ -111,4 +111,9 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
            ),
      );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

@@ -68,7 +68,7 @@ class _PlayPanel extends State<PlayPanel>{
                 changePlay();
 
               },
-              icon: Icon(playStatus==false?Icons.play_circle_outline:Icons.pause_circle_outline,color: Colors.redAccent,size:40.0)
+              icon: Icon(playStatus==false?Icons.play_circle_outline:Icons.pause_circle_outline,color: Colors.black,size:40.0)
           ),
           IconButton(
             padding:EdgeInsets.all(0.0),

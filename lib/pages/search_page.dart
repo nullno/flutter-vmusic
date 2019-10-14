@@ -44,9 +44,9 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   int loadState   = 0; //0加载中 1加载成功 2加载失败
 
   //搜索状态
-  int searchState = 0; //0未搜索 1搜索显示
-  int searchLoadSong = 0; // 0搜索中 1搜完成
-  int searchLoadVideo = 0; // 0搜索中 1搜完成
+  int searchState = 0; //搜索当前页 0未搜索 1搜索显示
+  int searchLoadSong = 0; //请求状态 0搜索中 1搜完成
+  int searchLoadVideo = 0; //请求状态 0搜索中 1搜完成
 
   List<Map> tabList = [{'title':'单曲','type':1},{'title':'视频','type':1014}];//tab集合
 
@@ -55,6 +55,13 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     "keywords":'',
     "offset":0,
     "type":1
+  };
+
+  Map  loadMore={
+    "Text":"正在加载中",
+    "Page":0,
+    "hasMore":true,
+    "isScrollBottom":false,
   };
 
   //初始化滚动监听器，加载更多使用
@@ -79,22 +86,13 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     });
     //单曲
     _scrollControllerSong.addListener(() {
-      FocusScope.of(context).requestFocus(FocusNode());
-
-      print(_scrollControllerSong.position.pixels);
-      setState(() {
-        suggestLists.clear();
-      });
+      scrollLoadmore(_scrollControllerSong);
     });
     //视频
     _scrollControllerVideo.addListener(() {
-      FocusScope.of(context).requestFocus(FocusNode());
-      setState(() {
-        suggestLists.clear();
-      });
+      scrollLoadmore(_scrollControllerVideo);
     });
     if(!widget.params['seachParam'].isEmpty){
-
       //初始化controller并添加监听
       _tabController = TabController(initialIndex:0,length: tabList.length, vsync: this);
       _tabController.addListener((){
@@ -103,11 +101,9 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           this.setState(() {
             _tabCurrentIndex = _tabController.index;
 
-
             doSearch(isTab:true);
 
           });
-
 
         }
       });
@@ -119,14 +115,34 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           doSearch();
         });
     }else{
-
       _flashData();
     }
 
-
-
   }
 
+   scrollLoadmore(SC){
+     FocusScope.of(context).requestFocus(FocusNode());
+     setState(() {
+       suggestLists.clear();
+     });
+     var maxScroll = SC.position.maxScrollExtent.toStringAsFixed(0);
+     var pixel = SC.position.pixels.toStringAsFixed(0);
+
+     if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
+       setState(() {
+         loadMore["Text"] = "正在加载中...";
+         loadMore["isScrollBottom"] = true;
+         doSearch(isMore:true,newSearch:false);
+       });
+
+     }else if(!loadMore['hasMore']) {
+       setState(() {
+         loadMore["isScrollBottom"]=true;
+         loadMore["Text"] = "~全部结果已加载完成~";
+       });
+     }
+
+   }
 
   //  刷新获取数据
     _flashData(){
@@ -152,7 +168,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   }
 
   //搜索
-  void doSearch({bool isTab:false}){
+  void doSearch({bool isTab:false,bool isMore:false,bool newSearch:true}){
 
     if(seachParam['keywords']==''){
       return;
@@ -165,36 +181,74 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           _searchController.clear();
           resultSongs.clear();
           resultVideos.clear();
+          seachParam['offset']=0;
+          loadMore['Page']=0;
+          loadMore["isScrollBottom"]=false;
+          loadMore["hasMore"]=true;
         });
       });
     }else{
       //新搜索清除
-      if(!isTab){
-        resultSongs.clear();
-        resultVideos.clear();
+      if(isTab || newSearch){
+        setState(() {
+          resultSongs.clear();
+          resultVideos.clear();
+          seachParam['offset'] = 0;
+          loadMore['Page'] = 0;
+          loadMore["isScrollBottom"] = false;
+          loadMore["hasMore"] = true;
+        });
       }
       seachParam['type']=tabList[_tabCurrentIndex]['type'];
-      seachParam['offset']=0;
+
       setState(() {
         searchLoadSong=0;
         searchLoadVideo=0;
        });
 
+      print(seachParam);
       search(seachParam,(res){
 
-//          print(res);
+
           setState(() {
             switch(seachParam['type']) {
               case 1:
                 searchLoadSong = 1;
+
                 if (res['result']['songCount'] > 0) {
-                  resultSongs = res['result']['songs'];
+                  print(res['result']['songCount']);
+
+
+                  res['result']['songs'].forEach((aitem)=>{
+                    resultSongs.add(aitem)
+                  });
+
+                  if(resultSongs.length>=res['result']['songCount']){
+                    loadMore["hasMore"]=false;
+                  }
+                  loadMore['Page']=loadMore['Page']+1;
+                  loadMore["isScrollBottom"]=false;
+                  seachParam['offset']=loadMore['Page']*10;
+
                 }
                 break;
               case 1014:
                 searchLoadVideo = 1;
                 if (!res['result'].isEmpty) {
-                  resultVideos = res['result']['videos'];
+
+                  print(res['result']['videoCount']);
+
+                  res['result']['videos'].forEach((aitem)=>{
+                    resultVideos.add(aitem)
+                  });
+
+                  if(resultVideos.length>=res['result']['videoCount']){
+                    loadMore["hasMore"]=false;
+                  }
+                  loadMore['Page']=loadMore['Page']+1;
+                  loadMore["isScrollBottom"]=false;
+                  seachParam['offset']=loadMore['Page']*10;
+
                 }
                 break;
             }
@@ -538,12 +592,15 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Container(
+       Visibility(
+         child:Container(
           width: 15.0,
           height: 15.0,
           margin: EdgeInsets.all(5.0),
           child: Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
-        ),
+       ),
+         visible: load==0,
+       ),
         FixedSizeText(
             load == 0 ? "搜索中..." : '暂无结果', textAlign: TextAlign.center,
             style: TextStyle(height: 1, fontSize: 12.0))
@@ -585,7 +642,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     Widget SearchResultSongs(List<dynamic> resultSongs) {
       return ListView.builder(
           controller: _scrollControllerSong,
-          padding: EdgeInsets.fromLTRB(0.0,30.0,0.0,15.0),
+          padding: EdgeInsets.fromLTRB(0.0,30.0,0.0,30.0),
           itemCount: resultSongs.length,
           itemBuilder: (context, i) => Material(
             color:Colors.transparent,
@@ -636,8 +693,8 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     Widget SearchResultVideos(List<dynamic> resultVideos) {
       return ListView.builder(
           controller: _scrollControllerVideo,
-          padding: EdgeInsets.fromLTRB(0.0,30.0,0.0,15.0),
-          itemCount: resultSongs.length,
+          padding: EdgeInsets.fromLTRB(0.0,30.0,0.0,30.0),
+          itemCount: resultVideos.length,
           itemBuilder: (context, i) => Material(
             color:Colors.transparent,
             child: InkWell(
@@ -696,11 +753,33 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     Widget mainWarp=  new Stack(
         alignment:Alignment.bottomCenter,
       children: <Widget>[
-
         hotRankLists.length>0&&searchState==0?HotRank:searchState==1?TabslideView:Container(),
-
         Visibility(child: Tabsearch,visible: (searchState==1)),
         Visibility(child: Suggest,visible: suggestLists.length>0),
+        Visibility(
+        child:Container(
+          width:Adapt.screenW() ,
+          color:Colors.white70,
+          height:20,
+            child:Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Visibility(
+                  child: Container(
+                    width:15.0,
+                    height:15.0,
+                    margin:EdgeInsets.all(5.0),
+                    child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
+                  ),
+                  visible:loadMore["hasMore"] ,
+                ),
+                FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1,fontSize:12.0))
+              ],
+            )
+            ) ,
+          visible:loadMore["isScrollBottom"],
+
+        ),
       ]
 
     );
@@ -727,12 +806,13 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   }
   @override
   void dispose() {
+
+//    _scrollController.dispose();
+//    _scrollControllerSong.dispose();
+//    _scrollControllerVideo.dispose();
+//    _searchController.dispose();
+//    _tabController.dispose();
     super.dispose();
-    _scrollController.dispose();
-    _scrollControllerSong.dispose();
-    _scrollControllerVideo.dispose();
-    _searchController.dispose();
-    _tabController.dispose();
   }
 
 }
