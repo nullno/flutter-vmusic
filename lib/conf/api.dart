@@ -125,10 +125,20 @@ void getAllMV(parameters,resolve,[reject]) async {
 }
 
 
-//获取视频播放数据
+//获取mv视频播放数据
 void getMVDetail(mvId,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/mv/detail",queryParameters:{"mvid":mvId});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//获取视频详情
+void getVideoDetail(id,resolve,[reject]) async {
+  try {
+    Response<dynamic> response = await dio.get("/video/detail",queryParameters:{"id":id});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);
