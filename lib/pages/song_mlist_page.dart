@@ -265,7 +265,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                                   ],)),
                                   FixedSizeText(songDetail['description'],maxLines:3,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:10.0,color:Colors.white60)),
                                   Container(
-                                      margin:EdgeInsets.fromLTRB(0, 20.0,0.0, 20.0),
+                                      margin:EdgeInsets.fromLTRB(0, 10.0,0.0, 0.0),
                                       child: Row(
                                         children: <Widget>[
                                           ClipRRect(

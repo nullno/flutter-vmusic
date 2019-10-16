@@ -358,4 +358,7 @@ await   getPersonalizedSongList((res){
     AdController.dispose();
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

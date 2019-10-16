@@ -39,7 +39,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
   void initState() {
     super.initState();
 
-    SYS.systemUI(Colors.transparent,Colors.black);
+    SYS.systemUI(Colors.transparent,Colors.black,Brightness.light);
 
     //初始化controller并添加监听
     controller = TabController(initialIndex:0,length: tabList.length, vsync: this);

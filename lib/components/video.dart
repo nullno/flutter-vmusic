@@ -14,6 +14,9 @@ import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
 import 'dart:async';
 import 'package:flutter_vmusic/conf/api.dart';
 
+import 'package:flutter_vmusic/conf/router.dart';
+import 'package:flutter_vmusic/conf/platform.dart';
+
 class VideoList extends StatefulWidget{
 
   @override
@@ -187,46 +190,54 @@ class _VideoList extends State<VideoList>{
             crossAxisCount: 2,
             shrinkWrap: true,
             children: topList.map((item){
-              return  Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Stack(
-                        children: <Widget>[
-                          new CachedNetworkImage(
-                            placeholder: _loaderImg,
-                            errorWidget: _error,
-                            imageUrl:item['picUrl'],//item['playlist']['coverImgUrl'],
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            right:3.0,
-                            top:3.0,
-                            child:Row(
-                              children: <Widget>[
-                                Icon(Icons.play_arrow,color:Colors.white,size:10.0,),
-                                FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
-                              ],
+              return  InkWell(
+                onTap:()=>{
+                  Router.fadeNavigator(context,"/videopage",{'vid':item['id'],'type':0, 'from':'/video'},(res){
+                    SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                  })
+                },
+                child:  Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: Stack(
+                          children: <Widget>[
+                            new CachedNetworkImage(
+                              placeholder: _loaderImg,
+                              errorWidget: _error,
+                              imageUrl:item['picUrl'],//item['playlist']['coverImgUrl'],
+                              fit: BoxFit.cover,
                             ),
-                          )
-                        ],
-                      )
-                  ),
-                  Container(
-                    padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
-                    child: FixedSizeText(item['name'],
+                            Positioned(
+                              right:3.0,
+                              top:3.0,
+                              child:Row(
+                                children: <Widget>[
+                                  Icon(Icons.play_arrow,color:Colors.white,size:10.0,),
+                                  FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:10.0))
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                    ),
+                    Container(
+                      padding:EdgeInsets.fromLTRB(0.0, 3.0, 0.0, 0.0),
+                      child: FixedSizeText(item['name'],
+                          maxLines:1,
+                          overflow: TextOverflow.ellipsis,
+                          style:TextStyle(fontSize:13.0)),
+                    ),
+
+                    FixedSizeText(item['artistName'],
                         maxLines:1,
                         overflow: TextOverflow.ellipsis,
-                        style:TextStyle(fontSize:13.0)),
-                  ),
-
-                  FixedSizeText(item['artistName'],
-                      maxLines:1,
-                      overflow: TextOverflow.ellipsis,
-                      style:TextStyle(fontSize:11.0,color:Colors.grey))
-                ],
+                        style:TextStyle(fontSize:11.0,color:Colors.grey))
+                  ],
+                )
               );
+
             }).toList()
         ),
 
@@ -306,12 +317,22 @@ class _VideoList extends State<VideoList>{
                           ],
                         )
                     ),
-                    Container(
-                      margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,0.0),
-                      child:FixedSizeText(item['name']+'---'+item['artistName'],
-                            maxLines:2,
-                            overflow: TextOverflow.ellipsis,
-                            style:TextStyle(fontSize:14.0,height:1.2)))
+                   InkWell(
+                      onTap:(){
+                                 setState(() {
+                                   item['vurl']=null;
+                                 });
+                        Router.fadeNavigator(context,"/videopage",{'vid':item['id'],'type':0, 'from':'/video'},(res){
+                                  SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                                });
+                      },
+                     child:Container(
+                         margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,0.0),
+                         child:FixedSizeText(item['name']+'---'+item['artistName'],
+                             maxLines:2,
+                             overflow: TextOverflow.ellipsis,
+                             style:TextStyle(fontSize:14.0,height:1.2)))
+                   )
 
                   ],
                 ),

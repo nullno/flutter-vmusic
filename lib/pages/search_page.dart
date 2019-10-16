@@ -17,6 +17,7 @@ import 'package:flutter_vmusic/conf/api.dart';
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
 
+import 'package:flutter_vmusic/conf/platform.dart';
 
 
 class SearchPage extends StatefulWidget{
@@ -31,6 +32,8 @@ class SearchPage extends StatefulWidget{
 
 class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
 
+   //状态栏颜色
+  Brightness STATUSBARCOLOR = Brightness.light;
 
   //歌单详情
   Map songDetail =  new Map();
@@ -77,7 +80,6 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(() {
       FocusScope.of(context).requestFocus(FocusNode());
       setState(() {
@@ -278,7 +280,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
         child: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          brightness: Brightness.light,
+          brightness:STATUSBARCOLOR,
           bottom: PreferredSize(
               child: Container(
                 color: Colors.white,
@@ -538,7 +540,6 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                     );
                   }).toList(),
                 ),
-
               ],
             ),
           )
@@ -588,7 +589,6 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
 
     //搜索load
     Widget Loadwidget (load){
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -698,7 +698,11 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           itemBuilder: (context, i) => Material(
             color:Colors.transparent,
             child: InkWell(
-              onTap: (){},
+              onTap: (){
+                Router.fadeNavigator(context,"/videopage",{'vid':resultVideos[i]['vid'],'type':resultVideos[i]['type'], 'from':'/search'},(res){
+                  SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                });
+              },
               child:  Container(
                 margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
                 padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
@@ -815,4 +819,6 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
     super.dispose();
   }
 
+  @override
+  bool get wantKeepAlive => true;
 }

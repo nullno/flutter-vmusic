@@ -41,7 +41,7 @@ class Router{
        pageWidget=SearchPage(params:params);
        break;
      case'/videopage':
-       pageWidget=SearchPage(params:params);
+       pageWidget=VideoPage(params:params);
        break;
 
 
