@@ -7,8 +7,9 @@ import 'package:screen/screen.dart';
 class SimpleViewPlayer extends StatefulWidget {
   final String source;
   bool isFullScreen;
+  final callback;
 
-  SimpleViewPlayer(this.source, {this.isFullScreen: false});
+  SimpleViewPlayer(this.source, {this.isFullScreen: false,this.callback});
 
   @override
   _SimpleViewPlayerState createState() => _SimpleViewPlayerState();
@@ -65,6 +66,7 @@ class _SimpleViewPlayerState extends State<SimpleViewPlayer> {
       body: PlayView(
         controller,
         allowFullScreen: !widget.isFullScreen,
+          callback: widget.callback
       ),
     );
   }
@@ -73,8 +75,8 @@ class _SimpleViewPlayerState extends State<SimpleViewPlayer> {
 class PlayView extends StatefulWidget {
   VideoPlayerController controller;
   bool allowFullScreen;
-
-  PlayView(this.controller, {this.allowFullScreen: true});
+  final callback;
+  PlayView(this.controller, {this.allowFullScreen: true,this.callback});
 
   @override
   _PlayViewState createState() => _PlayViewState();
@@ -91,6 +93,7 @@ class _PlayViewState extends State<PlayView> {
     setState(() {
       hideBottom = false;
     });
+    widget.callback();
     if (controller.value.isPlaying) {
       controller.pause();
     } else {
@@ -267,7 +270,7 @@ class _PlayViewState extends State<PlayView> {
                   child: controller.value.isPlaying
                       ? Container()
                       : Icon(
-                    Icons.play_circle_filled,
+                    Icons.play_arrow,
                     color: primaryColor,
                     size: 48.0,
                   ),

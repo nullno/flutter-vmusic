@@ -44,6 +44,7 @@ class _VideoPage extends State<VideoPage> {
 
   bool barshow=false; //导航显示状态
 
+  int titleLine= 1;
 
   //初始化滚动监听器，加载更多使用
   ScrollController _scrollController = new ScrollController();
@@ -99,112 +100,227 @@ class _VideoPage extends State<VideoPage> {
       );
     }
 
+
     //顶部导航
-    Widget appNav = Visibility(
-      child: SafeArea(
-          child:  Container(
-            color: Colors.transparent,
-            width: double.infinity,
-            height: 40.0,
-            child: Material(
-              color: Colors.transparent,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(Icons.arrow_back, color: Colors.white,
-                          size: 25.0),
-                    ),
-                  ),
-                  Expanded(
-                      flex: 5,
-                      child: FixedSizeText(videoDetail.isNotEmpty?widget.params['type']==1?videoDetail['title']:videoDetail['name']:'loading...',maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),)
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child:Visibility(
-                        child:IconButton(
-                          onPressed: () => {
-
-                          },
-                          color: Colors.redAccent,
-                          icon: Icon(Icons.more_vert, color: Colors.white, size: 25.0),
-
-                        ),
-                        visible:false,
-                      )
-                  )
-                ],
+    Widget appNav = Offstage(
+      child:SafeArea(child: Container(
+        color: Colors.transparent,
+        width: double.infinity,
+        height: 30.0,
+        child: Material(
+          color: Colors.transparent,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: IconButton(
+                        padding:EdgeInsets.all(0.0),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back, color: Colors.white,
+                      size: 25.0),
+                )
               ),
-            ),
+              Expanded(
+                  flex: 5,
+                  child: FixedSizeText(videoDetail.isNotEmpty?widget.params['type']==1?videoDetail['title']:videoDetail['name']:'loading...',maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.white),)
+              ),
+              Expanded(
+                  flex: 1,
+                  child:Visibility(
+                    child:IconButton(
+                      onPressed: () => {
 
-          )
-      ),
-      visible:barshow,
-    );
+                      },
+                      color: Colors.redAccent,
+                      icon: Icon(Icons.more_vert, color: Colors.white, size: 25.0),
 
-    Widget viewPanel = ListView(
-      children: <Widget>[
-        InkWell(onTap:(){
-              setState(() {
-                barshow=!barshow;
-                !barshow? SYS.hideTopBar():SYS.systemUI(Colors.transparent,Colors.black,Brightness.light);
-              });
-          },
-            child: Container(
-                width:double.infinity,
-                color:Colors.black,
-                height:230,
-                child:videoDetail.isNotEmpty && videoDetail.containsKey("vurl") ?SimpleViewPlayer(videoDetail['vurl'], isFullScreen: false,):
-                Center(
-                     child:videoDetail.containsKey("coverUrl") || videoDetail.containsKey("cover")?Container(
-                       width:double.infinity,
-                         decoration:new BoxDecoration(
-                           image: new DecorationImage(
-                               image:NetworkImage(widget.params['type']==1?videoDetail['coverUrl']:videoDetail['cover'])
-                               )
-
-                         ),
-
-                            ): Center(
-                       child:SizedBox(
-                           width:40.0,
-                           height:40.0,
-                           child: CircularProgressIndicator(backgroundColor:Colors.redAccent)),
-                     )
-                      )
-            )
+                    ),
+                    visible:false,
+                  )
+              )
+            ],
+          ),
         ),
-        videoDetail.isNotEmpty?Container(
-          padding:EdgeInsets.all(15.0),
-          child:  FixedSizeText(widget.params['type']==1?videoDetail['title']:videoDetail['name'],style:TextStyle(color:Colors.black)),
-        ):Container(),
-      ],
+
+      )),
+      offstage:!barshow,
     );
+
+    //视频
+    Widget videoPanel = Material(
+      child: Container(
+          width:Adapt.screenW(),
+          color:Colors.black,
+          height:200,
+          child:videoDetail.isNotEmpty && videoDetail.containsKey("vurl") ?SimpleViewPlayer(videoDetail['vurl'], isFullScreen: false,
+              callback:(){
+                     setState(() {
+                      barshow=!barshow;
+                      !barshow? SYS.hideTopBar():SYS.systemUI(Colors.transparent,Colors.black,Brightness.light);
+                      });
+              }):
+          Center(
+              child:videoDetail.containsKey("coverUrl") || videoDetail.containsKey("cover")?Container(
+                width:double.infinity,
+                decoration:new BoxDecoration(
+                    image: new DecorationImage(
+                        image:NetworkImage(widget.params['type']==1?videoDetail['coverUrl']:videoDetail['cover'])
+                    )
+
+                ),
+
+              ): Center(
+                child:SizedBox(
+                    width:40.0,
+                    height:40.0,
+                    child: CircularProgressIndicator(backgroundColor:Colors.redAccent)),
+              )
+          )
+      ));
+
+//    信息
+    Widget viewPanel = Container(
+      width:Adapt.screenW(),
+      height:Adapt.screenH()-200,
+      color: Color(0xFFF2F2F2),
+      child:ListView(
+        padding:EdgeInsets.all(0.0),
+        children: <Widget>[
+          videoDetail.isNotEmpty?Container(
+            color:Colors.white,
+            padding:EdgeInsets.fromLTRB(15.0,10.0,15.0,5.0),
+            child:Column(
+              mainAxisAlignment:MainAxisAlignment.start,
+              crossAxisAlignment:CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment:CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex:7,
+                      child:Container(
+                         padding:EdgeInsets.only(bottom:10.0),
+                        child:FixedSizeText(widget.params['type']==1?videoDetail['title']:videoDetail['name'] +'  --'+videoDetail['artistName'],maxLines:titleLine,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:15,fontWeight:FontWeight.bold)),
+                      )
+
+                    ),
+
+                    InkWell(
+                        onTap: (){
+                          print('cscs');
+                          setState((){
+                            titleLine=titleLine==1?3:1;
+                          });
+                        },
+                        child:Icon(titleLine==1?Icons.arrow_drop_down:Icons.arrow_drop_up,color:Colors.grey,size:30,),
+                    )
+
+                  ],
+                ),
+                FixedSizeText(tranNumber(videoDetail[widget.params['type']==1?'playTime':'playCount'])+'次观看',style:TextStyle(color:Colors.grey,fontSize:13)),
+                Container(
+                  padding:EdgeInsets.fromLTRB(30.0,10.0,30.0,10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      InkWell(
+                        onTap: (){},
+                        child:Column(
+                          children: <Widget>[
+                            Icon(Icons.touch_app,color:Colors.black,size:30.0),
+                            FixedSizeText(tranNumber(videoDetail[widget.params['type']==1?'praisedCount':'likeCount']),style:TextStyle(fontSize:12.0,color:Colors.black))
+                          ],
+                        ),
+                      ),
+//                      InkWell(
+//                        onTap: (){},
+//                        child:Column(
+//                          children: <Widget>[
+//                            Icon(Icons.add_box,color:Colors.black,size:30.0),
+//                            FixedSizeText(tranNumber(videoDetail['shareCount']),style:TextStyle(fontSize:12.0,color:Colors.black))
+//                          ],
+//                        ),
+//                      ),
+                      InkWell(
+                        onTap: (){},
+                        child:Column(
+                          children: <Widget>[
+                            Icon(Icons.insert_comment,color:Colors.black,size:30.0),
+                            FixedSizeText(tranNumber(videoDetail['commentCount']),style:TextStyle(fontSize:12.0, color:Colors.black))
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: (){},
+                        child:Column(
+                          children: <Widget>[
+                            Icon(Icons.share,color:Colors.black,size:30.0),
+                            FixedSizeText(tranNumber(videoDetail['shareCount']),style:TextStyle(fontSize:12.0, color:Colors.black))
+                          ],
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+                Divider(),
+                widget.params['type']==1?
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment:CrossAxisAlignment.center,
+                  children: <Widget>[
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(40),
+                            child:Container(
+                              width:40,
+                              height:40,
+                              child:new CachedNetworkImage(
+                                imageUrl:videoDetail['avatarUrl'],//item['picUrl'],
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                        ),
+                    Padding(
+                       padding:EdgeInsets.only(left:5),
+                      child: FixedSizeText(videoDetail['creator']['nickname'],style:TextStyle(color:Colors.black,fontSize:13)),
+                    )
+
+                 ]
+             ):Container()
+              ]
+            )
+          ):Container(),
+        ],
+      )
+    );
+
+
 
 
     //主内容区
     Widget mainWarp=  new Stack(
         alignment:Alignment.topCenter,
         children: <Widget>[
-          viewPanel,
-          appNav
+          videoPanel,
+          appNav,
+          Positioned(
+            bottom:0,
+            child: viewPanel,
+          ),
+
+
         ]
 
     );
 
 
     //主内容区s
-    return  Material(
-          color:Colors.white,
-          child:mainWarp,
-    );
+    return Material(child: mainWarp,) ;
   }
   @override
   void dispose() {

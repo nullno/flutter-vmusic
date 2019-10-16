@@ -729,7 +729,7 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                   flex:6,
                   child:Container(
                     padding:EdgeInsets.all(5.0),
-                    child: keywordsHighlight(seachParam['keywords'],"${resultVideos[i]['title']}\n/<br>/${formatDuration(resultVideos[i]['durationms'])} by${resultVideos[i]['creator'][0]['userName']}"),
+                    child: keywordsHighlight(seachParam['keywords'],"${resultVideos[i]['title']}\n/<br>/${formatDuration(resultVideos[i]['durationms'])} by ${resultVideos[i]['creator'][0]['userName']}"),
 
                   ),
 
