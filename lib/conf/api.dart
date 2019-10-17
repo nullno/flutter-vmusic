@@ -29,7 +29,7 @@ void getBanner(resolve,reject) async {
 //搜索
 void search(parameters,resolve,[reject]) async {
   try {
-    Response<dynamic> response = await dio.get("/search",queryParameters:{"keywords":parameters['keywords'],"limit": 30,"offset":parameters['offset'],"type":parameters["type"]});
+    Response<dynamic> response = await dio.get("/search",queryParameters:{"keywords":parameters['keywords'],"limit": 20,"offset":parameters['offset'],"type":parameters["type"]});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);
@@ -158,6 +158,7 @@ void getVideoUrl(vid,resolve,[reject]) async {
 
 //获取mv评论
 void getMvComment(vid,resolve,[reject]) async {
+
   try {
     Response<dynamic> response = await dio.get("/comment/mv",queryParameters:{"id":vid});
     resolve(jsonDecode(response.toString()));
@@ -166,10 +167,12 @@ void getMvComment(vid,resolve,[reject]) async {
   }
 }
 
-//获取评论
-void getVideoComment(vid,resolve,[reject]) async {
+//获取视频评论
+void getVideoComment(parameters,resolve,[reject]) async {
+
   try {
-    Response<dynamic> response = await dio.get("/comment/video",queryParameters:{"id":vid});
+    var path  = parameters['type']==0?"/comment/mv":"/comment/video";
+    Response<dynamic> response = await dio.get(path,queryParameters:{"id":parameters['vid'],"limit":20,"offset":parameters['offset'],"before":parameters['before']});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);

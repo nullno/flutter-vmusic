@@ -33,6 +33,7 @@ class _SimpleViewPlayerState extends State<SimpleViewPlayer> {
     controller.initialize();
     controller.setLooping(true);
     controller.addListener(listener);
+
     controller.play();
     Screen.keepOn(true);
     if (widget.isFullScreen) {
@@ -100,7 +101,7 @@ class _PlayViewState extends State<PlayView> {
     if (controller.value.isPlaying) {
       controller.pause();
     } else {
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 0), () {
         if (!mounted) {
           return;
         }
@@ -204,60 +205,62 @@ class _PlayViewState extends State<PlayView> {
                       opacity: 1.0,
                       child: Container(
                           height: 25.0,
+                          margin:EdgeInsets.all(5.0),
                           color: Colors.transparent,
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              GestureDetector(
-                                child: Container(
-                                  child: controller.value.isPlaying
-                                      ? Icon(
-                                    Icons.pause,
-                                    color: primaryColor,
-                                  )
-                                      : Icon(
-                                    Icons.play_arrow,
-                                    color: primaryColor,
-                                  ),
-                                ),
-                                onTap: onClickPlay,
-                              ),
+//                              GestureDetector(
+//                                child: Container(
+//                                  child: controller.value.isPlaying
+//                                      ? Icon(
+//                                    Icons.pause,
+//                                    color: primaryColor,
+//                                  )
+//                                      : Icon(
+//                                    Icons.play_arrow,
+//                                    color: primaryColor,
+//                                  ),
+//                                ),
+//                                onTap: onClickPlay,
+//                              ),
                               Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 5.0),
                                   child: Center(
                                     child: Text(
-                                      "${controller.value.position.toString().split(".")[0]}",
+                                      "${controller.value.position.toString().split(".")[0]}/${controller.value.duration.toString().split(".")[0]}",
                                       style:
                                       TextStyle(color: Colors.white),
                                     ),
                                   )),
-                              Expanded(
-                                         child:ClipRRect(
-                                             borderRadius: BorderRadius.circular(20),
-                                             child:VideoProgressIndicator(
-                                           controller,
-                                           allowScrubbing: true,
-                                           padding: EdgeInsets.symmetric(
-                                               horizontal: 0.1, vertical: 0.1),
-                                           colors: VideoProgressColors(
-                                               bufferedColor:Colors.black12,
-                                               playedColor: Colors.redAccent),
-                                         )) ,
+//                              Expanded(
+//                                         child:ClipRRect(
+//                                             borderRadius: BorderRadius.circular(20),
+//                                             child:VideoProgressIndicator(
+//                                           controller,
+//                                           allowScrubbing: true,
+//                                           padding: EdgeInsets.symmetric(
+//                                               horizontal: 0.1, vertical: 0.1),
+//                                           colors: VideoProgressColors(
+//                                               bufferedColor:Colors.black12,
+//                                               playedColor: Colors.redAccent),
+//                                         )) ,
+//
+//
+//                                  ),
 
-
-                                  ),
-
-                              Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: Center(
-                                    child: Text(
-                                      "${controller.value.duration.toString().split(".")[0]}",
-                                      style:
-                                      TextStyle(color: Colors.white),
-                                    ),
-                                  )),
+//                              Container(
+//                                  padding: EdgeInsets.symmetric(
+//                                      horizontal: 5.0),
+//                                  child: Center(
+//                                    child: Text(
+//                                      "${controller.value.duration.toString().split(".")[0]}",
+//                                      style:
+//                                      TextStyle(color: Colors.white),
+//                                    ),
+//                                  )),
                               Container(
                                 child: widget.allowFullScreen
                                     ? Container(
@@ -294,6 +297,25 @@ class _PlayViewState extends State<PlayView> {
                     color: primaryColor,
                     size: 48.0,
                   ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child:SizedBox(
+                    height:3.0,
+                    child:ClipRRect(
+                        borderRadius: BorderRadius.circular(0),
+                        child: VideoProgressIndicator(
+                          controller,
+                          allowScrubbing: true,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 0, vertical: 0),
+                          colors: VideoProgressColors(
+                              backgroundColor:Colors.transparent,
+                              bufferedColor:Colors.black12,
+                              playedColor: Colors.red),
+                        )) ,
+                  )
+
                 )
               ],
             )),
@@ -306,6 +328,7 @@ class _PlayViewState extends State<PlayView> {
           child: RaisedButton(
             onPressed: () {
               controller.initialize();
+
               controller.setLooping(true);
               controller.play();
             },

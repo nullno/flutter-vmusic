@@ -16,6 +16,9 @@ import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
 
 import 'package:flutter_vmusic/components/playPanel.dart';
 
+import 'package:flutter_vmusic/conf/router.dart';
+import 'package:flutter_vmusic/conf/platform.dart';
+
 class SongMenuList extends StatefulWidget{
   final Map params;
   SongMenuList({
@@ -177,7 +180,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
       )
     );
 
-    //头部信息
+    //歌单信息
     Widget headInfo= Container(
             height:250.0,
             color:Colors.black,
@@ -352,7 +355,71 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
 
 
     );
+    //歌曲片段
+    Widget  songListView(List<dynamic>  songdata){
 
+      return ListView.builder(
+          itemCount: songdata.length,
+          shrinkWrap: true,
+          primary:false,
+          padding:EdgeInsets.all(0.0),
+          itemBuilder: (context, i) =>  Material(
+            color:Colors.transparent,
+            child: InkWell(
+              onTap: (){},
+
+              child:  Container(
+                margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
+                padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
+                child:  Row(
+                  crossAxisAlignment:CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: FixedSizeText((i+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:Colors.grey,fontSize:20.0)),
+                    ),
+                    Expanded(
+                      flex: 6,
+                      child:Column(
+                        crossAxisAlignment:CrossAxisAlignment.start,
+                        children: <Widget>[
+                          FixedSizeText(songdata[i]['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:13.0)),
+                          FixedSizeText(songdata[i]['ar'][0]['name'],maxLines:1,overflow:TextOverflow.ellipsis,style:TextStyle(color:Colors.grey,fontSize:12.0)),
+                        ],
+                      ) ,
+                    ),
+                    Expanded(
+                        flex: 1,
+                        child:Visibility(
+                          child: Align(
+                            alignment:Alignment.topRight,
+                            child:  InkWell(onTap: (){
+                              Router.fadeNavigator(context,"/videopage",{'vid':songdata[i]['mv'],'type':0, 'from':'/video'},(res){
+                                SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                              });
+                            },child:Icon(Icons.music_video,color:Colors.redAccent,)),
+                          ),
+                          visible:songdata[i]['mv']>0,
+                        )
+                    ),
+                    Expanded(
+                        flex: 1,
+                        child:Align(
+                          alignment:Alignment.topRight,
+                          child: InkWell(onTap: (){}, child:Icon(Icons.more_vert,color:Colors.grey,)),
+                        )
+                    ),
+                  ],
+
+                ),
+              ),
+            ),
+          )
+
+      );
+
+    }
     //歌曲列表
     Widget songs=Container(
       color:Colors.transparent,
@@ -387,60 +454,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                       Divider(
                         height:28.0,
                       ),
-                      Column(
-                        children: songLists.asMap().keys.map((index){
-                          return  Material(
-                            color:Colors.transparent,
-                            child: InkWell(
-                              onTap: (){},
-
-                              child:  Container(
-                                margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
-                                padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
-                                child:  Row(
-                                  crossAxisAlignment:CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 1,
-                                      child: FixedSizeText((index+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:Colors.grey,fontSize:20.0)),
-                                    ),
-                                    Expanded(
-                                      flex: 6,
-                                      child:Column(
-                                        crossAxisAlignment:CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          FixedSizeText(songLists[index]['name'],maxLines:1,overflow:TextOverflow.ellipsis, style:TextStyle(color:Colors.black,fontSize:13.0)),
-                                          FixedSizeText(songLists[index]['ar'][0]['name'],maxLines:1,overflow:TextOverflow.ellipsis,style:TextStyle(color:Colors.grey,fontSize:12.0)),
-                                        ],
-                                      ) ,
-                                    ),
-                                    Expanded(
-                                        flex: 1,
-                                        child:Visibility(
-                                          child: Align(
-                                            alignment:Alignment.topRight,
-                                            child:  InkWell(onTap: (){},child:Icon(Icons.music_video,color:Colors.redAccent,)),
-                                          ),
-                                          visible:songLists[index]['mv']>0,
-                                        )
-                                    ),
-                                    Expanded(
-                                        flex: 1,
-                                        child:Align(
-                                          alignment:Alignment.topRight,
-                                          child: InkWell(onTap: (){}, child:Icon(Icons.more_vert,color:Colors.grey,)),
-                                        )
-                                    ),
-                                  ],
-
-                                ),
-                              ),
-                            ),
-                          );
-
-                        }).toList(),
-                      ),
+                      songListView(songLists),
                       Center(
                         child:FixedSizeText('~没有了呦~',textAlign:TextAlign.center,style:TextStyle(color:Colors.grey,fontSize:12.0),)
                       )

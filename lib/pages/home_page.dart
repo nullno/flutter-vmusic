@@ -60,7 +60,9 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
 
     //侧栏
     Widget mDrawer = new Drawer(//New added
-      child: new Text('还不知道放什么'),//New added
+      child: Center(
+        child:Text('暂无历史播放内容'),
+      ),//New added
     );
 
     Widget getModule(int i) {
@@ -104,7 +106,7 @@ class _HomePage extends State<HomePage> with SingleTickerProviderStateMixin{
                          onPressed: (){
                            _scaffoldKey.currentState.openDrawer();
                          },
-                         icon:Icon(Icons.menu,color: Colors.black,size:25.0),
+                         icon:Icon(Icons.history,color: Colors.black,size:25.0),
                        ),
                      ),
                      Expanded(

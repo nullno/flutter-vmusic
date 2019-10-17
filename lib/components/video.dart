@@ -44,8 +44,6 @@ class _VideoList extends State<VideoList>{
          "isScrollBottom":false,
        };
 
-  //视频控制
-//  VideoPlayerController _videoPlayerController;
   //初始化滚动监听器，加载更多使用
   ScrollController _scrollController = new ScrollController();
 
@@ -68,9 +66,9 @@ class _VideoList extends State<VideoList>{
         setState(() {
           loadMore["Text"] = "正在加载中...";
           loadMore["isScrollBottom"]=true;
-             getAllMV({"area":'全部',"offset":loadMore['page']*10},(res){
+             getAllMV({"area":'全部',"offset":loadMore['Page']*10},(res){
                   loadMore['hasMore']=res['hasMore'];
-                  loadMore['page']=loadMore['page']+1;
+                  loadMore['Page']=loadMore['Page']+1;
                   loadMore["isScrollBottom"]=false;
                   res['data'].forEach((aitem)=>{
                     aitem['vurl']=null,
@@ -121,7 +119,7 @@ class _VideoList extends State<VideoList>{
     await  getAllMV({"area":'全部',"offset":0},(res){
         status = 1;
         loadMore['hasMore']=res['hasMore'];
-        loadMore['page']=1;
+        loadMore['Page']=1;
         loadMore["isScrollBottom"]=false;
         allList.clear();
         res['data'].forEach((aitem)=>{
@@ -244,11 +242,115 @@ class _VideoList extends State<VideoList>{
       ],
     );
 
+    //视频片段
+    Widget  mvList(List<dynamic>  mvdata){
+
+      return ListView.builder(
+        itemCount: mvdata.length,
+        shrinkWrap: true,
+        primary:false,
+        padding:EdgeInsets.all(0.0),
+        itemBuilder: (context, i) => Container(
+          color:Colors.white,
+          width:double.infinity,
+          padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+          margin:EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: new Stack(
+                    alignment:Alignment.center,
+                    children: <Widget>[
+                      Container(
+                        width:double.infinity,
+                        color:Colors.black,
+                        height:185.0,
+                        child:mvdata[i]['vurl']==null||mvdata[i]['vurl']==1?new CachedNetworkImage(
+                          imageUrl:mvdata[i]['cover']!=null?mvdata[i]['cover']:"http://p1.music.126.net/l6zOREIvWGNk3L67EkffRw==/1401877337913197.jpg",//item['picUrl'],
+                          fit: BoxFit.cover,
+                        ):SimpleViewPlayer(mvdata[i]['vurl'], isFullScreen: false),
+                      ),
+                      mvdata[i]['vurl']==null||mvdata[i]['vurl']==1?Positioned(
+                        bottom:3.0,
+                        left:3.0,
+                        child:Row(
+                          children: <Widget>[
+                            Icon(Icons.play_arrow,color:Colors.white,size:13.0,),
+                            FixedSizeText(tranNumber(mvdata[i]['playCount']),style:TextStyle(color:Colors.white,fontSize:12.0))
+                          ],
+                        ),
+                      ):Container(),
+                      mvdata[i]['vurl']==null||mvdata[i]['vurl']==1?Positioned(
+                        bottom:3.0,
+                        right:3.0,
+                        child:Row(
+                          children: <Widget>[
+                            Icon(Icons.graphic_eq,color:Colors.white,size:13.0,),
+                            FixedSizeText(formatDuration(mvdata[i]['duration']),style:TextStyle(color:Colors.white,fontSize:12.0))
+                          ],
+                        ),
+                      ):Container(),
+                      mvdata[i]['vurl']==1?CircularProgressIndicator(backgroundColor:Colors.redAccent):mvdata[i]['vurl']==null?Positioned(
+                        child:InkWell(
+                          onTap:(){
+                            midPlayer(mvdata[i]['id']);
+                          },
+                          child:Icon(Icons.play_arrow,color:Colors.white70,size:45.0,),
+                        ),
+                      ):Container()
+                    ],
+                  )
+              ),
+              Material(
+                  color:Colors.white,
+                  child:InkWell(
+                    highlightColor:Colors.transparent,
+                    onTap:(){
+                      setState(() {
+                        mvdata[i]['vurl']=null;
+                      });
+                      Router.fadeNavigator(context,"/videopage",{'vid':mvdata[i]['id'],'type':0, 'from':'/video'},(res){
+                        SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                      });
+                    },
+                    child:Padding(
+                      padding:EdgeInsets.only(top:10.0,bottom:10.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            flex:7,
+                            child:Container(
+                                margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,5.0),
+                                width:Adapt.screenW(),
+                                child:FixedSizeText(mvdata[i]['name']+'---'+mvdata[i]['artistName'],
+                                    maxLines:2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:TextStyle(fontSize:14.0,height:1.2))),
+                          ),
+                          Icon(Icons.send,color:Colors.grey,size:15.0,)
+                        ],
+                      ),
+                    ),
+
+                  )
+              )
+
+            ],
+          ),
+        )
+      );
+
+    }
+
     //全部
     Widget  allMV = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-      Container(
+       Container(
         color:Colors.white,
         padding:EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 2.0),
         child:  Row(
@@ -259,104 +361,7 @@ class _VideoList extends State<VideoList>{
           ],
         ),
       ),
-
-        Column(
-            children: allList.map((item){
-              return Container(
-                color:Colors.white,
-                width:double.infinity,
-                padding:EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                margin:EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: new Stack(
-                          alignment:Alignment.center,
-                          children: <Widget>[
-                            Container(
-                              width:double.infinity,
-                              color:Colors.black,
-                              height:185.0,
-                              child:item['vurl']==null||item['vurl']==1?new CachedNetworkImage(
-                                imageUrl:item['cover']!=null?item['cover']:"http://p1.music.126.net/l6zOREIvWGNk3L67EkffRw==/1401877337913197.jpg",//item['picUrl'],
-                                fit: BoxFit.cover,
-                              ):SimpleViewPlayer(item['vurl'], isFullScreen: false),
-                            ),
-                            item['vurl']==null||item['vurl']==1?Positioned(
-                              bottom:3.0,
-                              left:3.0,
-                              child:Row(
-                                children: <Widget>[
-                                  Icon(Icons.play_arrow,color:Colors.white,size:13.0,),
-                                  FixedSizeText(tranNumber(item['playCount']),style:TextStyle(color:Colors.white,fontSize:12.0))
-                                ],
-                              ),
-                            ):Container(),
-                            item['vurl']==null||item['vurl']==1?Positioned(
-                              bottom:3.0,
-                              right:3.0,
-                              child:Row(
-                                children: <Widget>[
-                                  Icon(Icons.graphic_eq,color:Colors.white,size:13.0,),
-                                  FixedSizeText(formatDuration(item['duration']),style:TextStyle(color:Colors.white,fontSize:12.0))
-                                ],
-                              ),
-                            ):Container(),
-                            item['vurl']==1?CircularProgressIndicator(backgroundColor:Colors.redAccent):item['vurl']==null?Positioned(
-                              child:InkWell(
-                                onTap:(){
-                                  midPlayer(item['id']);
-                                },
-                                child:Icon(Icons.play_arrow,color:Colors.white70,size:45.0,),
-                              ),
-                            ):Container()
-                          ],
-                        )
-                    ),
-                    Material(
-                      color:Colors.white,
-                      child:InkWell(
-                         highlightColor:Colors.transparent,
-                          onTap:(){
-                                  setState(() {
-                                    item['vurl']=null;
-                                  });
-                                  Router.fadeNavigator(context,"/videopage",{'vid':item['id'],'type':0, 'from':'/video'},(res){
-                                    SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
-                                  });
-                          },
-                          child:Padding(
-                            padding:EdgeInsets.only(top:10.0,bottom:10.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  flex:7,
-                                  child:Container(
-                                      margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,5.0),
-                                      width:Adapt.screenW(),
-                                      child:FixedSizeText(item['name']+'---'+item['artistName'],
-                                          maxLines:2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style:TextStyle(fontSize:14.0,height:1.2))),
-                                ),
-                                Icon(Icons.send,color:Colors.grey,size:15.0,)
-                              ],
-                            ),
-                          ),
-
-                      )
-                    )
-
-                  ],
-                ),
-              );
-
-            }).toList()
-        ),
+        mvList(allList)
 
       ],
     );

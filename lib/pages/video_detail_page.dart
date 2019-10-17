@@ -3,16 +3,12 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter_vmusic/conf/router.dart';
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter_vmusic/utils/tool.dart';
 
 import 'package:flutter_vmusic/conf/api.dart';
-
 
 import 'package:flutter_vmusic/utils/video_player.dart';
 
@@ -35,7 +31,7 @@ class VideoPage extends StatefulWidget{
 class _VideoPage extends State<VideoPage> {
 
 
-  //歌单详情
+  //视频详情
   Map videoDetail =  new Map();
 
   //加载状态
@@ -49,8 +45,16 @@ class _VideoPage extends State<VideoPage> {
   List<dynamic> HotCommentList = [];
   //全部评论
   List<dynamic> AllCommentList = [];
-  int commentloadStatus = 1; //1加载中 2加载完成 评论
+  int commentloadStatus = 1; //0资源不存在 1加载中 2加载完成 评论
 
+  //加载更多
+  Map  loadMore={
+    "Text":"----",
+    "Page":0,
+    "before":0,
+    "hasMore":true,
+    "isScrollBottom":false,
+  };
 
   //初始化滚动监听器，加载更多使用
   ScrollController _scrollController = new ScrollController();
@@ -59,7 +63,7 @@ class _VideoPage extends State<VideoPage> {
   void initState() {
     super.initState();
       SYS.hideTopBar();
-      print(widget.params);
+      addloadMore();
 
     if(widget.params['type']==0){
       getMVDetail(widget.params['vid'],(res){
@@ -67,7 +71,14 @@ class _VideoPage extends State<VideoPage> {
             res['data']['vurl'] =videoUrl(res['data']['brs']);
             videoDetail=res['data'];
           });
+        },(err){
+        print('资源不存在');
+        setState(() {
+          loadState=2;
+          barshow=true;
+          SYS.systemUI(Colors.transparent,Colors.black,Brightness.light);
         });
+      });
     }
     if(widget.params['type']==1){
       getVideoDetail(widget.params['vid'],(res){
@@ -81,35 +92,67 @@ class _VideoPage extends State<VideoPage> {
               }
             });
           });
+      },(err){
+        setState(() {
+          loadState=2;
+          barshow=true;
+          SYS.systemUI(Colors.transparent,Colors.black,Brightness.light);
+        });
+
       });
     }
 
     getComment();
   }
 
+//  全部mv监听加载更多
+  addloadMore(){
+    _scrollController.addListener(() {
+      var maxScroll = _scrollController.position.maxScrollExtent.toStringAsFixed(0);
+      var pixel = _scrollController.position.pixels.toStringAsFixed(0);
 
+      if (maxScroll == pixel && loadMore["hasMore"]&&!loadMore["isScrollBottom"]) {
+
+          getComment(scroll:true);
+
+      } else if(!loadMore['hasMore']) {
+        setState(() {
+          loadMore["isScrollBottom"]=true;
+          loadMore["Text"] = "已加载全部";
+        });
+      }
+    });
+  }
 
   //获取评论
-  getComment(){
-    if(widget.params['type']==0){
-      getMvComment(widget.params['vid'],(res){
-        setState(() {
-          HotCommentList = res['hotComments'];
-          AllCommentList = res['comments'];
-          commentloadStatus=2;
-        });
+  getComment({bool scroll:false}){
+    if(scroll){
+      setState(() {
+      loadMore["Text"] = "正在加载中...";
+      loadMore["isScrollBottom"]=true;
       });
-    }
-    if(widget.params['type']==1){
-      getVideoComment(widget.params['vid'],(res){
-        setState(() {
-          HotCommentList = res['hotComments'];
-          AllCommentList = res['comments'];
 
-          commentloadStatus=2;
-        });
-      });
     }
+      getVideoComment({'type':widget.params['type'],'vid':widget.params['vid'],'offset':loadMore['Page']*20,'before':loadMore['before']},(res){
+
+        setState(() {
+          loadMore['hasMore']=res['more'];
+          loadMore['Page']=loadMore['Page']+1;
+          loadMore["isScrollBottom"]=false;
+          if(!scroll){
+            HotCommentList = res['hotComments'];
+            commentloadStatus=2;
+          }
+          res['comments'].forEach((aitem)=>{
+            AllCommentList.add(aitem)
+          });
+
+        });
+      },(err){
+        print('资源不存在');
+        commentloadStatus=0;
+      });
+
   }
 
 
@@ -195,7 +238,7 @@ class _VideoPage extends State<VideoPage> {
                 ),
 
               ): Center(
-                child:SizedBox(
+                child:loadState==2?Text('资源不存在',style:TextStyle(color:Colors.white),):SizedBox(
                     width:40.0,
                     height:40.0,
                     child: CircularProgressIndicator(backgroundColor:Colors.redAccent)),
@@ -328,7 +371,7 @@ class _VideoPage extends State<VideoPage> {
     ):Container();
 
  //评论列表
-  Widget commentList(List<dynamic> listData){
+    Widget commentList(List<dynamic> listData){
     return ListView.builder(
         itemCount: listData.length,
         shrinkWrap: true,
@@ -420,20 +463,35 @@ class _VideoPage extends State<VideoPage> {
               padding:EdgeInsets.fromLTRB(15.0,5.0,15.0,0.0),
             ):Container(),
             HotCommentList.length>0?commentList(HotCommentList):Container(),
-            AllCommentList.length>0?Container(
+            HotCommentList.length>0?Container(
                color: Color(0xFFF2F2F2),
              height:10.0,
             ):Container(),
             AllCommentList.length>0?Container(
               padding:EdgeInsets.only(left:15.0),
               margin:EdgeInsets.only(top:10.0,),
-              child:FixedSizeText('全部评论:',style:TextStyle(fontSize:15.0,fontWeight:FontWeight.bold,color:Colors.black)),
+              child:FixedSizeText('全部评论(${tranNumber(videoDetail['commentCount'])})',style:TextStyle(fontSize:15.0,fontWeight:FontWeight.bold,color:Colors.black)),
             ):Container(),
             AllCommentList.length>0?Padding(
               child: Divider(),
               padding:EdgeInsets.fromLTRB(15.0,5.0,15.0,5.0),
             ):Container(),
             AllCommentList.length>0?commentList(AllCommentList):Container(),
+            AllCommentList.length>0? Visibility(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  loadMore["hasMore"]?Container(
+                    width:15.0,
+                    height:15.0,
+                    margin:EdgeInsets.all(5.0),
+                    child:Loading(indicator: LineScalePulseOutIndicator(), size: 100.0),
+                  ):Container(),
+                  FixedSizeText(loadMore["Text"],textAlign:TextAlign.center,style:TextStyle(height:1,fontSize:12.0))
+                ],
+              ),
+              visible: loadMore["isScrollBottom"],
+            ):Container()
           ],
         ):Container(child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -460,6 +518,7 @@ class _VideoPage extends State<VideoPage> {
         height:Adapt.screenH()-200,
         color: Color(0xFFF2F2F2),
         child:ListView(
+          controller: _scrollController,
           padding:EdgeInsets.all(0.0),
           children: <Widget>[
             vInfo,
@@ -476,7 +535,7 @@ class _VideoPage extends State<VideoPage> {
           appNav,
           Positioned(
             bottom:0,
-            child: viewPanel,
+            child: loadState!=2?viewPanel:Container(),
           ),
         ]
 
@@ -488,6 +547,7 @@ class _VideoPage extends State<VideoPage> {
   }
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 

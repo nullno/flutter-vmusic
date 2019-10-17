@@ -76,9 +76,9 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
         setState(() {
           loadMore["Text"] = "正在加载中...";
           loadMore["isScrollBottom"]=true;
-          getHighqualitySongList({"cat":loadMore['type'],"before":loadMore['page']},(res){
+          getHighqualitySongList({"cat":loadMore['type'],"before":loadMore['Page']},(res){
                       loadMore['hasMore']=res['more'];
-                      loadMore['page']=res['lasttime'];
+                      loadMore['Page']=res['lasttime'];
                       loadMore["isScrollBottom"]=false;
                       res['playlists'].forEach((aitem)=>{
                         songLists.add(aitem)
@@ -120,7 +120,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
     await  getHighqualitySongList({"cat":loadMore['type'],"before":0},(res){
       status = 1;
       loadMore['hasMore']=res['more'];
-      loadMore['page']=res['lasttime'];
+      loadMore['Page']=res['lasttime'];
       loadMore["isScrollBottom"]=false;
       songLists.clear();
       songLists=res['playlists'];

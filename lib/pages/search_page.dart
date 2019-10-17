@@ -669,7 +669,11 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                         child:Visibility(
                           child: Align(
                             alignment:Alignment.topRight,
-                            child:  InkWell(onTap: (){},child:Icon(Icons.music_video,color:Colors.redAccent,)),
+                            child:  InkWell(onTap: (){
+                              Router.fadeNavigator(context,"/videopage",{'vid':resultSongs[i]['mvid'],'type':0, 'from':'/video'},(res){
+                                SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                              });
+                            },child:Icon(Icons.music_video,color:Colors.redAccent,)),
                           ),
                           visible:resultSongs[i]['mvid']>0,
                         )
