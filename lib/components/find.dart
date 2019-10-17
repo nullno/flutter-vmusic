@@ -104,15 +104,6 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
        print(err);
      });
 
-   //获取热歌榜
-await  getRank((res){
-       status = 1;
-       songRanks=res;
-   },(err){
-     status = 2;
-     print(err);
-   });
-
    // 获取推荐歌单
 await   getPersonalizedSongList((res){
         status = 1;
@@ -187,23 +178,23 @@ await   getPersonalizedSongList((res){
           childAspectRatio: 1,
           crossAxisCount: 6,
           shrinkWrap: true,
-          children: songRanks.map((item){
-            return  Column(
+          children: <Widget>[
+            Column(
               children: <Widget>[
                 ClipRRect(
                     borderRadius: BorderRadius.circular(50),
                     child: Stack(
                       children: <Widget>[
-                          InkWell(
+                        InkWell(
                           onTap: (){
-                            Router.fadeNavigator(context,"/songmenulist",{'id':item['playlist']['id'],'from':'/find'},(res){});
-                           },
+                            Router.fadeNavigator(context,"/songmenulist",{'id':4395559,'from':'/find'},(res){});
+                          },
                           child: new CachedNetworkImage(
-                                        imageUrl:item['playlist']['coverImgUrl'],//item['playlist']['coverImgUrl'],
-                                        fit: BoxFit.cover,
-                                      ),
-                          )
-                       /* Positioned(
+                            imageUrl:'https://p1.music.126.net/N2whh2Prf0l8QHmCpShrcQ==/19140298416347251.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                        /* Positioned(
                           left:20.0,
                           bottom:3.0,
                           child:Row(
@@ -216,13 +207,115 @@ await   getPersonalizedSongList((res){
                       ],
                     )
                 ),
-               /* FixedSizeText(item['playlist']['name'],
+                /* FixedSizeText(item['playlist']['name'],
                     maxLines:1,
                     overflow: TextOverflow.ellipsis,
                     style:TextStyle(fontSize:13.0,height:1.5))*/
               ],
-            );
-          }).toList()
+            ),
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':2617766278,'from':'/find'},(res){});
+                          },
+                          child: new CachedNetworkImage(
+                            imageUrl:'https://p1.music.126.net/XbjRDARP1xv5a-40ZDOy6A==/109951163785427934.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      ],
+                    )
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':3779629,'from':'/find'},(res){});
+                          },
+                          child: new CachedNetworkImage(
+                            imageUrl:'http://p1.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      ],
+                    )
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':3778678,'from':'/find'},(res){});
+                          },
+                          child: new CachedNetworkImage(
+                            imageUrl:'http://p2.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      ],
+                    )
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':2884035,'from':'/find'},(res){});
+                          },
+                          child: new CachedNetworkImage(
+                            imageUrl:'http://p2.music.126.net/sBzD11nforcuh1jdLSgX7g==/18740076185638788.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      ],
+                    )
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Stack(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: (){
+                            Router.fadeNavigator(context,"/songmenulist",{'id':2250011882,'from':'/find'},(res){});
+                          },
+                          child: new CachedNetworkImage(
+                            imageUrl:'http://p1.music.126.net/oUxnXXvM33OUHxxukYnUjQ==/109951164174523461.jpg',//item['playlist']['coverImgUrl'],
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      ],
+                    )
+                ),
+              ],
+            ),
+    ],
+
+
         ),
 
       ],
@@ -242,7 +335,7 @@ await   getPersonalizedSongList((res){
                    color:Colors.white,
                    child: InkWell(
                     onTap: (){
-                      Router.fadeNavigator(context,"/songmenu",{'des':'我是首页进来的555','from':'/find'},(res){});
+                      Router.fadeNavigator(context,"/songmenu",{'from':'/find'},(res){});
                     },
                      highlightColor:Colors.grey,
 

@@ -155,3 +155,23 @@ void getVideoUrl(vid,resolve,[reject]) async {
     reject(e);
   }
 }
+
+//获取mv评论
+void getMvComment(vid,resolve,[reject]) async {
+  try {
+    Response<dynamic> response = await dio.get("/comment/mv",queryParameters:{"id":vid});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//获取评论
+void getVideoComment(vid,resolve,[reject]) async {
+  try {
+    Response<dynamic> response = await dio.get("/comment/video",queryParameters:{"id":vid});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}

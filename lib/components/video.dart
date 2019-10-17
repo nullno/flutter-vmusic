@@ -269,23 +269,21 @@ class _VideoList extends State<VideoList>{
                 margin:EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: <Widget>[
                     ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: Stack(
+                        child: new Stack(
                           alignment:Alignment.center,
                           children: <Widget>[
-                        Container(
-                          width:double.infinity,
-                          color:Colors.black,
-                          height:185.0,
-                          child:item['vurl']==null||item['vurl']==1?new CachedNetworkImage(
-                              placeholder: _loaderImg,
-                              imageUrl:item['cover']!=null?item['cover']:"http://p1.music.126.net/l6zOREIvWGNk3L67EkffRw==/1401877337913197.jpg",//item['picUrl'],
-                              fit: BoxFit.cover,
-                            ):SimpleViewPlayer(item['vurl'], isFullScreen: false,),
-                        ),
+                            Container(
+                              width:double.infinity,
+                              color:Colors.black,
+                              height:185.0,
+                              child:item['vurl']==null||item['vurl']==1?new CachedNetworkImage(
+                                imageUrl:item['cover']!=null?item['cover']:"http://p1.music.126.net/l6zOREIvWGNk3L67EkffRw==/1401877337913197.jpg",//item['picUrl'],
+                                fit: BoxFit.cover,
+                              ):SimpleViewPlayer(item['vurl'], isFullScreen: false),
+                            ),
                             item['vurl']==null||item['vurl']==1?Positioned(
                               bottom:3.0,
                               left:3.0,
@@ -310,29 +308,48 @@ class _VideoList extends State<VideoList>{
                               child:InkWell(
                                 onTap:(){
                                   midPlayer(item['id']);
-                                 },
+                                },
                                 child:Icon(Icons.play_arrow,color:Colors.white70,size:45.0,),
                               ),
                             ):Container()
                           ],
                         )
                     ),
-                   InkWell(
-                      onTap:(){
-                                 setState(() {
-                                   item['vurl']=null;
-                                 });
-                        Router.fadeNavigator(context,"/videopage",{'vid':item['id'],'type':0, 'from':'/video'},(res){
-                                  SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
-                                });
-                      },
-                     child:Container(
-                         margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,0.0),
-                         child:FixedSizeText(item['name']+'---'+item['artistName'],
-                             maxLines:2,
-                             overflow: TextOverflow.ellipsis,
-                             style:TextStyle(fontSize:14.0,height:1.2)))
-                   )
+                    Material(
+                      color:Colors.white,
+                      child:InkWell(
+                         highlightColor:Colors.transparent,
+                          onTap:(){
+                                  setState(() {
+                                    item['vurl']=null;
+                                  });
+                                  Router.fadeNavigator(context,"/videopage",{'vid':item['id'],'type':0, 'from':'/video'},(res){
+                                    SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                                  });
+                          },
+                          child:Padding(
+                            padding:EdgeInsets.only(top:10.0,bottom:10.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Expanded(
+                                  flex:7,
+                                  child:Container(
+                                      margin:EdgeInsets.fromLTRB(0.0,5.0,0.0,5.0),
+                                      width:Adapt.screenW(),
+                                      child:FixedSizeText(item['name']+'---'+item['artistName'],
+                                          maxLines:2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style:TextStyle(fontSize:14.0,height:1.2))),
+                                ),
+                                Icon(Icons.send,color:Colors.grey,size:15.0,)
+                              ],
+                            ),
+                          ),
+
+                      )
+                    )
 
                   ],
                 ),

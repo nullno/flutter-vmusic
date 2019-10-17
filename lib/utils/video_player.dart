@@ -93,7 +93,10 @@ class _PlayViewState extends State<PlayView> {
     setState(() {
       hideBottom = false;
     });
-    widget.callback();
+
+    if(widget.callback!=null){
+      widget.callback();
+    }
     if (controller.value.isPlaying) {
       controller.pause();
     } else {
@@ -171,11 +174,28 @@ class _PlayViewState extends State<PlayView> {
             color: Colors.black,
             child: Stack(
               children: <Widget>[
+
                 Center(
                     child: AspectRatio(
                       aspectRatio: size.width / size.height,
                       child: VideoPlayer(controller),
                     )),
+                Visibility(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black87,
+                          Colors.transparent,
+                          Colors.black87,
+                        ],
+                      ),
+                    ),
+                  ),
+                  visible:!controller.value.isPlaying ,
+                ),
                 Align(
                     alignment: Alignment.bottomCenter,
                     child: hideBottom

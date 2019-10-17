@@ -255,7 +255,10 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                             flex: 3,
                             child:Container(
                               padding:EdgeInsets.fromLTRB(15.0, 0.0, 0.0, 0.0),
-                              height:double.infinity,
+
+                              constraints:BoxConstraints.expand(
+                                  height:130.0
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:MainAxisAlignment.spaceBetween,
@@ -265,7 +268,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
                                   ],)),
                                   FixedSizeText(songDetail['description'],maxLines:3,overflow:TextOverflow.ellipsis, style:TextStyle(fontSize:10.0,color:Colors.white60)),
                                   Container(
-                                      margin:EdgeInsets.fromLTRB(0, 10.0,0.0, 0.0),
+                                      margin:EdgeInsets.fromLTRB(0, 0.0,0.0, 0.0),
                                       child: Row(
                                         children: <Widget>[
                                           ClipRRect(

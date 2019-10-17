@@ -60,7 +60,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                                  begin: Offset(0.0, -0.5),
                                  end: Offset(0.0, 0.0),
                                ).animate(curve),
-                               child:Text('VMUSIC',style:TextStyle(color:Colors.white,fontSize:50.0,fontWeight:FontWeight.bold),),
+                               child:Text('DX MUSIC',style:TextStyle(color:Colors.white,fontSize:50.0,fontWeight:FontWeight.bold),),
                              ),
                              SizeTransition(
                                axis: Axis.horizontal, //控制宽度或者高度缩放
@@ -80,7 +80,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
                                    begin: Offset(0.0, 0.5),
                                    end: Offset(0.0, 0.0),
                                  ).animate(curve),
-                                 child: Text('全网音乐随身听',style:TextStyle(color:Colors.white,fontSize:20.0),)
+                                 child: Text('Thanks NeteaseCloudMusicApi',style:TextStyle(color:Colors.white,fontSize:20.0),)
                              )
                            ],
                          )
