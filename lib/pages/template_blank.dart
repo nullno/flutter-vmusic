@@ -15,6 +15,7 @@ import 'package:flutter_vmusic/conf/api.dart';
 
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/line_scale_pulse_out_indicator.dart';
+import 'package:flutter_vmusic/conf/platform.dart';
 
 
 class VideoPage extends StatefulWidget{

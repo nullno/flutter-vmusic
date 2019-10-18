@@ -89,7 +89,7 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     var status = 0;
 
     // 获取推荐歌单
-    await  getSongDetail({"id":widget.params['id']},(res){
+    await  getSongMenuDetail({"id":widget.params['id']},(res){
 
       songDetail=res['playlist'];
       songLists=res['playlist']['tracks'];
@@ -157,18 +157,23 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
 
                       ),
                     ),
-                    Expanded(
-                        flex: 1,
-                        child:IconButton(
-                          onPressed: (){
-                                   setState(() {
+                  Expanded(
+                          flex: 1,
+                          child:  Visibility(
+                              child:IconButton(
+                            onPressed: (){
+                              setState(() {
 
-                                   });
-                          },
-                          color:Colors.redAccent,
-                          icon:Icon(Icons.more_vert,color: topTitleStatus==0?Colors.white:Colors.black,size:25.0),
+                              });
+                            },
+                            color:Colors.redAccent,
+                            icon:Icon(Icons.more_vert,color: topTitleStatus==0?Colors.white:Colors.black,size:25.0),
 
-                        )
+                          ),
+                            visible: false,
+
+                      ),
+
                     )
                   ],
                 ),
@@ -366,7 +371,11 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
           itemBuilder: (context, i) =>  Material(
             color:Colors.transparent,
             child: InkWell(
-              onTap: (){},
+              onTap: (){
+                Router.fadeNavigator(context,"/playerpage",{'id':songdata[i]['id'],'from':'/songmenulist'},(res){
+                  SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                });
+              },
 
               child:  Container(
                 margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),

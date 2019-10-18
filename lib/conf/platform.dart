@@ -3,7 +3,6 @@
 */
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class SYS {
     static systemUI(statusBarColor,navColor,brightcolor){

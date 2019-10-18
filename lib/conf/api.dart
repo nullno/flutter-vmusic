@@ -96,7 +96,7 @@ void getHighqualitySongList(parameters,resolve,[reject]) async {
 }
 
 //获取歌单详情
-void getSongDetail(parameters,resolve,[reject]) async {
+void getSongMenuDetail(parameters,resolve,[reject]) async {
   try {
     Response<dynamic> response = await dio.get("/playlist/detail",queryParameters:{"id":parameters["id"]});
     resolve(jsonDecode(response.toString()));
@@ -173,6 +173,26 @@ void getVideoComment(parameters,resolve,[reject]) async {
   try {
     var path  = parameters['type']==0?"/comment/mv":"/comment/video";
     Response<dynamic> response = await dio.get(path,queryParameters:{"id":parameters['vid'],"limit":20,"offset":parameters['offset'],"before":parameters['before']});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//获取歌曲详情
+void getSongDetail(ids,resolve,[reject]) async {
+  try {
+    Response<dynamic> response = await dio.get("/song/detail",queryParameters:{"ids":ids});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
+//获取歌曲播放链接
+void getSongUrl(id,resolve,[reject]) async {
+  try {
+    Response<dynamic> response = await dio.get("/song/url",queryParameters:{"id":id});
     resolve(jsonDecode(response.toString()));
   } catch (e) {
     reject(e);

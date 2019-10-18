@@ -647,7 +647,11 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
           itemBuilder: (context, i) => Material(
             color:Colors.transparent,
             child: InkWell(
-              onTap: (){},
+              onTap: (){
+                Router.fadeNavigator(context,"/playerpage",{'id':resultSongs[i]['id'],'from':'/songmenulist'},(res){
+                  SYS.systemUI(Colors.transparent,Colors.black,Brightness.dark);
+                });
+              },
               child:  Container(
                 margin:EdgeInsets.fromLTRB(0.0,15.0,0.0,15.0),
                 padding:EdgeInsets.fromLTRB(15.0,0.0,15.0,0.0) ,
@@ -656,10 +660,10 @@ class _SearchPage extends State<SearchPage> with SingleTickerProviderStateMixin{
                   crossAxisAlignment:CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: FixedSizeText((i+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:Colors.grey,fontSize:14.0)),
-                    ),
+//                    Expanded(
+//                      flex: 1,
+//                      child: FixedSizeText((i+1).toString(),textAlign:TextAlign.left,style:TextStyle(color:Colors.grey,fontSize:14.0)),
+//                    ),
                     Expanded(
                       flex: 6, child:keywordsHighlight(seachParam['keywords'],"${resultSongs[i]['name']}\n/<br>/${resultSongs[i]['artists'][0]['name']}-${resultSongs[i]['album']['name']}"),
 

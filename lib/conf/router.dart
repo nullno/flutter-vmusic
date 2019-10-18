@@ -11,6 +11,8 @@ import 'package:flutter_vmusic/pages/song_menu_page.dart';
 import 'package:flutter_vmusic/pages/song_mlist_page.dart';
 import 'package:flutter_vmusic/pages/search_page.dart';
 import 'package:flutter_vmusic/pages/video_detail_page.dart';
+import 'package:flutter_vmusic/pages/player_page.dart';
+
 
 class Router{
   //初始化路由
@@ -43,6 +45,8 @@ class Router{
      case'/videopage':
        pageWidget=VideoPage(params:params);
        break;
+     case'/playerpage':
+       pageWidget=PlayerPage(params:params);
 
 
    }

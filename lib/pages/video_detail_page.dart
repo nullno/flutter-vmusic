@@ -306,7 +306,7 @@ class _VideoPage extends State<VideoPage> {
                       onTap: (){},
                       child:Column(
                         children: <Widget>[
-                          Icon(Icons.touch_app,color:Colors.black,size:30.0),
+                          Icon(Icons.star_border,color:Colors.black,size:30.0),
                           FixedSizeText(tranNumber(videoDetail[widget.params['type']==1?'praisedCount':'likeCount']),style:TextStyle(fontSize:12.0,color:Colors.black))
                         ],
                       ),

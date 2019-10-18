@@ -28,7 +28,6 @@ dependencies:
   dio: ^2.1.16 # latest version
   cached_network_image: ^1.1.1 #网络图片缓存
   path_provider: ^1.1.0   #这是获取 安卓  IOS 文件缓存路径
-  flutter_statusbarcolor: ^0.2.2
   video_player: ^0.10.2+3 #视频播放
   screen: ^0.0.4 #全屏
   loading: ^1.0.1 #加载动画
@@ -52,9 +51,12 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
+     - assets/image/disc.png
+     - assets/image/disc_light.png
+     - assets/image/needle.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
