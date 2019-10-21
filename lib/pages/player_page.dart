@@ -4,7 +4,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
 import 'dart:ui';
 import 'package:flutter_vmusic/utils/tool.dart';
@@ -28,8 +27,12 @@ class PlayerPage extends StatefulWidget{
 class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
 
   //音乐控制
-  AudioPlayer audioPlayer = new AudioPlayer();
+  AudioPlayer audioPlayer = new AudioPlayer() ;
   bool playStatus=false;
+  String playUrl ='';
+  double playSliderVal=0.0;
+  Duration songDuration;
+  Duration songPosition;
   //旋转动画
   AnimationController _myController;
   Animation<double> rotateDisc;
@@ -39,77 +42,104 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
   //加载状态
   int loadState = 0; //0 加载中  1加载完成  2 失败
 
-  String playUrl ='';
+
 
   @override
   void initState() {
     super.initState();
-    //动画控制器
-    _myController = new AnimationController(duration: const Duration(seconds: 10), vsync: this);
+    SYS.hideBar();
+    discAni();
+    getData();
 
-
-    rotateDisc = new Tween(begin: 0.0, end: 1.0).animate(_myController);
-    rotateDisc.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        //动画从 controller.forward() 正向执行 结束时会回调此方法
-        print("status is completed");
-        //重置起点
-        _myController.reset();
-        //开启
-         _myController.forward();
-      } else if (status == AnimationStatus.dismissed) {
-        //动画从 controller.reverse() 反向执行 结束时会回调此方法
-        print("status is dismissed");
-      } else if (status == AnimationStatus.forward) {
-        print("status is forward");
-        //执行 controller.forward() 会回调此状态
-      } else if (status == AnimationStatus.reverse) {
-        //执行 controller.reverse() 会回调此状态
-        print("status is reverse");
-      }
+      audioPlayer.onDurationChanged.listen((Duration d) {
+      setState(() => songDuration = d);
       });
 
-    SYS.hideBar();
+    audioPlayer.onAudioPositionChanged.listen((Duration d) {
+      setState((){
+          songPosition = d;
+          playSliderVal = songPosition.inSeconds.toDouble();
 
+      } );
+    });
+
+
+
+  }
+
+  //歌曲数据
+  void getData(){
     //歌曲详情
     getSongDetail(widget.params['id'],(res){
-       setState(() {
-         songDetail = res['songs'][0];
-       });
+      setState(() {
+        songDetail = res['songs'][0];
+      });
 
     },(err){
       loadState=2;
     });
     //歌曲链接
     getSongUrl(widget.params['id'],(res){
-        setState(() {
-          if(res['data'].length>0){
-          this.playUrl=res['data']['url'];
-//          playSong(this.playUrl);
-          }
-        });
+      setState(() {
+        if(res['data'].length>0){
+          setState(() {
+            this.playUrl=res['data'][0]['url'];
+            playSong(this.playUrl);
+          });
+        }
+      });
     },(err){
-    loadState=2;
+      loadState=2;
     });
-
   }
 
+  //磁盘动画
+  void discAni(){
+    //动画控制器
+    _myController = new AnimationController(duration: const Duration(seconds: 10), vsync: this);
+    rotateDisc = new Tween(begin: 0.0, end: 1.0).animate(_myController);
+    rotateDisc.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        //动画从 controller.forward() 正向执行 结束时会回调此方法
+//        print("status is completed");
+        //重置起点
+        _myController.reset();
+        //开启
+        _myController.forward();
+      } else if (status == AnimationStatus.dismissed) {
+        //动画从 controller.reverse() 反向执行 结束时会回调此方法
+//        print("status is dismissed");
+      } else if (status == AnimationStatus.forward) {
+//        print("status is forward");
+        //执行 controller.forward() 会回调此状态
+      } else if (status == AnimationStatus.reverse) {
+        //执行 controller.reverse() 会回调此状态
+//        print("status is reverse");
+      }
+    });
+  }
 
-
+  //播放歌曲
   void playSong(url) async{
-    int result = await audioPlayer.play(url);
+    print(url);
+    int result = await audioPlayer.play(url.replaceAll('http:', 'https:'));
     if(result==1) {
-      playStatus = !playStatus;
+      setState(() {
+        playStatus = !playStatus;
+        _myController.forward();
+      });
     }
   }
-
-  void pauseSong(url) async{
+//暂停播放
+  void pauseSong() async{
     int result = await audioPlayer.pause();
     if(result==1) {
-      playStatus = !playStatus;
+      setState(() {
+        _myController.stop();
+        playStatus = !playStatus;
+      });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -262,51 +292,48 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                 children: <Widget>[
                   Expanded(
                     flex:1,
-                    child: FixedSizeText('05:03',maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
+                    child: FixedSizeText(tranDuration(songPosition),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
                   ),
                   Expanded(
                     flex:5,
-                    child:Container(
-                        color:Colors.transparent,
-                        height:8,
-                        child:Stack(
-                          alignment:Alignment.centerLeft,
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child:Container(
-                                width:double.infinity,
-                                height:2,
-                                color:Colors.white54,
-                              ),
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child:Container(
-                                width:200,
-                                height:2,
-                                color:Colors.red,
-                              ),
-                            ),
-                            Positioned(
-                              left:200,
-                              child:ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: Container(
-                                    width:8.0,
-                                    height:8.0,
-                                    color:Colors.red,
-                                  )
-                              ),
-                            )
-                          ],
-                        )
+                    child:SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          //已拖动的颜色
+                          activeTrackColor: Colors.red,
+                          //未拖动的颜色
+                          inactiveTrackColor: Colors.white24,
+                          thumbShape: RoundSliderThumbShape(//可继承SliderComponentShape自定义形状
+                            enabledThumbRadius: 5, //滑块大小
+                          ),
+                          //滑块中心的颜色
+                          thumbColor: Colors.red,
+                          //滑块边缘的颜色
+                          overlayColor: Colors.white30,
+                        ),
+                      child:new Slider(
+                        onChanged: (newValue) {
+                          setState(() {
+                            playSliderVal = newValue;
+                          });
+
+                        if (songDuration != null) {
+                          int seconds = newValue.round();
+                          print("audioPlayer.seek: $seconds");
+                          audioPlayer.seek(new Duration(seconds: seconds));
+                        }
+                        },
+                        label: '$playSliderVal',
+                        value: playSliderVal ??0.0,
+                        min: 0,
+                        max: songDuration.inSeconds.toDouble(),
+                      ),
                     ),
+
 
                   ),
                   Expanded(
                     flex:1,
-                    child: FixedSizeText('06:03',maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
+                    child: FixedSizeText( tranDuration(songDuration),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
                   ),
                 ],
               )
@@ -333,15 +360,12 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                   IconButton(
                     padding:EdgeInsets.all(0.0),
                     onPressed: () {
-
                       if(!playStatus){
-                        _myController.forward();
+                        playSong(this.playUrl);
                       }else{
-                        _myController.stop();
+                        pauseSong();
+
                       }
-                      setState(() {
-                        playStatus=!playStatus;
-                      });
                     },
                     icon: Icon(playStatus?Icons.pause_circle_outline:Icons.play_circle_outline, color: Colors.white70,
                         size: 50.0),
@@ -388,6 +412,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
   @override
   void dispose() {
     _myController.dispose();
+    audioPlayer.dispose();
     super.dispose();
 
   }

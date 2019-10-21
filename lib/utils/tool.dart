@@ -76,6 +76,25 @@ tranTimestr(int timestamp){
 }
 /*
 
+*音乐播放时间进度处理
+return string
+ */
+
+ tranDuration(Duration d){
+
+   if(d==null){
+     return "00:00";
+   }
+   String t='';
+   if(d.inHours>0){
+     t = d.toString().split('.')[0];
+   }else{
+     t = d.toString().split('.')[0].substring(2,7);
+   }
+   return t;
+ }
+
+ /*
 *搜索文字高亮
  */
 
