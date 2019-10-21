@@ -4,31 +4,27 @@ import 'package:flutter_vmusic/pages/landing_page.dart';
 
 
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyApp createState() => _MyApp();
+void main(){
+  runApp(MyApp());
 }
 
-class _MyApp extends  State<MyApp>{
+
+class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title:'vmusic',
-      theme: new ThemeData(
-        primaryColor: Colors.white,
-        accentColor: Colors.black45,
-        accentColorBrightness: Brightness.light,
-      ),
-      home: LandingPage(),
-      color:Colors.white,
-      routes: Router.routes,
-      initialRoute: Router.initialRoute,
+            debugShowCheckedModeBanner: false,
+            title:'vmusic',
+            theme: new ThemeData(
+              primaryColor: Colors.white,
+              accentColor: Colors.black45,
+              accentColorBrightness: Brightness.light,
+            ),
+            home: LandingPage(),
+            color:Colors.white,
+            routes: Router.routes,
+            initialRoute: Router.initialRoute,
     );
   }
-}
-
-void main(){
-  runApp(MyApp());
-
 }

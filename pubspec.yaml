@@ -31,6 +31,7 @@ dependencies:
   video_player: ^0.10.2+3 #视频播放
   screen: ^0.0.4 #全屏
   loading: ^1.0.1 #加载动画
+  flutter_redux: ^0.5.3 #状态管理
 
 
 

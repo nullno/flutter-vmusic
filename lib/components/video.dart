@@ -50,9 +50,11 @@ class _VideoList extends State<VideoList>{
   @override
   void initState(){
     super.initState();
-    addloadMore();
+    if(mounted) {
+      addloadMore();
 //   数据刷新
-    _flashData();
+      _flashData();
+    }
   }
 
 //  全部mv监听加载更多
@@ -413,7 +415,6 @@ class _VideoList extends State<VideoList>{
 
   @override
   void dispose() {
-
     _scrollController.dispose();
     super.dispose();
   }

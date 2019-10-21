@@ -12,7 +12,7 @@ import 'package:flutter_vmusic/conf/api.dart';
 
 import 'package:flutter_vmusic/conf/platform.dart';
 import 'package:audioplayers/audioplayers.dart';
-
+import 'package:flutter_vmusic/conf/appsate.dart';
 
 class PlayerPage extends StatefulWidget{
   final Map params;
@@ -26,13 +26,14 @@ class PlayerPage extends StatefulWidget{
 
 class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
 
-  //音乐控制
-  AudioPlayer audioPlayer = new AudioPlayer() ;
-  bool playStatus=false;
-  String playUrl ='';
+//  //音乐控制
+  AudioPlayer audioPlayer = AppState.player['audioPlayer'] ;
+//  bool playStatus=false;
+//  String playUrl ='';
   double playSliderVal=0.0;
-  Duration songDuration;
-  Duration songPosition;
+//  Duration songDuration;
+//  Duration songPosition;
+//  bool loop = true;
   //旋转动画
   AnimationController _myController;
   Animation<double> rotateDisc;
@@ -43,7 +44,6 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
   int loadState = 0; //0 加载中  1加载完成  2 失败
 
 
-
   @override
   void initState() {
     super.initState();
@@ -51,16 +51,39 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
     discAni();
     getData();
 
-      audioPlayer.onDurationChanged.listen((Duration d) {
-      setState(() => songDuration = d);
+
+
+    audioPlayer.onDurationChanged.listen((Duration d) {
+
+//      setState(() => songDuration = d);
+        AppState.player['duration'] = d;
       });
 
     audioPlayer.onAudioPositionChanged.listen((Duration d) {
-      setState((){
-          songPosition = d;
-          playSliderVal = songPosition.inSeconds.toDouble();
+      if(mounted) {
+        setState(() {
+//          songPosition = d;
+          AppState.player['position'] = d;
+          playSliderVal =
+              AppState.player['position'].inSeconds.floor().toDouble();
+        });
+      }
+    });
 
-      } );
+    audioPlayer.onPlayerCompletion.listen((event) {
+      if(mounted) {
+        setState(() {
+          if (AppState.player['loop']) {
+            setState(() {
+              playSliderVal = 0.0;
+            });
+            playSong(AppState.player['url']);
+          } else {
+            _myController.stop();
+          }
+          AppState.player['playStatus'] = !AppState.player['playStatus'];
+        });
+      }
     });
 
 
@@ -73,6 +96,10 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
     getSongDetail(widget.params['id'],(res){
       setState(() {
         songDetail = res['songs'][0];
+        AppState.player['id']=widget.params['id'];
+        AppState.player['face']=songDetail['al']['picUrl'];
+        AppState.player['name']=songDetail['name'];
+        AppState.player['singer']=songDetail['ar'][0]['name'];
       });
 
     },(err){
@@ -83,8 +110,9 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
       setState(() {
         if(res['data'].length>0){
           setState(() {
-            this.playUrl=res['data'][0]['url'];
-            playSong(this.playUrl);
+            AppState.player['url']=res['data'][0]['url'];
+            playSong(AppState.player['url']);
+
           });
         }
       });
@@ -125,7 +153,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
     int result = await audioPlayer.play(url.replaceAll('http:', 'https:'));
     if(result==1) {
       setState(() {
-        playStatus = !playStatus;
+        AppState.player['playStatus']=true;
         _myController.forward();
       });
     }
@@ -135,8 +163,8 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
     int result = await audioPlayer.pause();
     if(result==1) {
       setState(() {
+        AppState.player['playStatus']=false;
         _myController.stop();
-        playStatus = !playStatus;
       });
     }
   }
@@ -186,6 +214,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                       onPressed: (){
 
                       },
+
                       color: Colors.redAccent,
                       icon: Icon(Icons.more_vert, color: Colors.white70, size: 25.0),
 
@@ -260,7 +289,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                              ),
                            ),
                            Transform.rotate(
-                           angle:playStatus?0:-0.5,
+                           angle:AppState.player['playStatus']?0:-0.5,
                              alignment:Alignment.topLeft,
                              child:Container(
                                height:100,
@@ -292,7 +321,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                 children: <Widget>[
                   Expanded(
                     flex:1,
-                    child: FixedSizeText(tranDuration(songPosition),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
+                    child: FixedSizeText(tranDuration(AppState.player['position']),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
                   ),
                   Expanded(
                     flex:5,
@@ -312,20 +341,19 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                         ),
                       child:new Slider(
                         onChanged: (newValue) {
+
+
+                        if (AppState.player['duration'] != null) {
                           setState(() {
                             playSliderVal = newValue;
                           });
-
-                        if (songDuration != null) {
-                          int seconds = newValue.round();
-                          print("audioPlayer.seek: $seconds");
+                          int seconds = newValue.ceil();
                           audioPlayer.seek(new Duration(seconds: seconds));
                         }
                         },
-                        label: '$playSliderVal',
-                        value: playSliderVal ??0.0,
-                        min: 0,
-                        max: songDuration.inSeconds.toDouble(),
+                        value:AppState.player['duration'] != null?(playSliderVal>AppState.player['duration'].inSeconds.ceil()?AppState.player['duration'].inSeconds.ceil():playSliderVal):0.0,
+                        min: 0.0,
+                        max: AppState.player['duration'] != null?AppState.player['duration'].inSeconds.ceil().toDouble():0.0,
                       ),
                     ),
 
@@ -333,7 +361,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                   ),
                   Expanded(
                     flex:1,
-                    child: FixedSizeText( tranDuration(songDuration),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
+                    child: FixedSizeText( tranDuration(AppState.player['duration']),maxLines:1,textAlign:TextAlign.center, style:TextStyle(color:Colors.white54,fontSize:12.0),),
                   ),
                 ],
               )
@@ -344,9 +372,11 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                   IconButton(
                         padding:EdgeInsets.all(0.0),
                               onPressed: () {
-
+                                      setState(() {
+                                        AppState.player['loop']=!AppState.player['loop'];
+                                      });
                               },
-                              icon: Icon(Icons.repeat, color: Colors.white24,
+                              icon: Icon(AppState.player['loop']?Icons.repeat_one:Icons.repeat, color: Colors.white24,
                                   size: 30.0),
                   ),
                   IconButton(
@@ -360,14 +390,13 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                   IconButton(
                     padding:EdgeInsets.all(0.0),
                     onPressed: () {
-                      if(!playStatus){
-                        playSong(this.playUrl);
+                      if(!AppState.player['playStatus']){
+                        playSong(AppState.player['url']);
                       }else{
                         pauseSong();
-
                       }
                     },
-                    icon: Icon(playStatus?Icons.pause_circle_outline:Icons.play_circle_outline, color: Colors.white70,
+                    icon: Icon(AppState.player['playStatus']?Icons.pause_circle_outline:Icons.play_circle_outline, color: Colors.white70,
                         size: 50.0),
                   ),
                   IconButton(
@@ -383,6 +412,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                     onPressed: () {
 
                     },
+
                     icon: Icon(Icons.playlist_play, color: Colors.white24,
                         size: 30.0),
                   ),
@@ -412,7 +442,6 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
   @override
   void dispose() {
     _myController.dispose();
-    audioPlayer.dispose();
     super.dispose();
 
   }

@@ -58,9 +58,11 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     _scrollController.addListener(() {
       var pixel = _scrollController.position.pixels;
       if (pixel >200) {
-        setState(() {
-          topTitleStatus=1;
-        });
+        if(mounted) {
+          setState(() {
+            topTitleStatus = 1;
+          });
+        }
       } else  if(topTitleStatus!=0){
         setState(() {
           topTitleStatus=0;
@@ -74,10 +76,12 @@ class _SongMenuList extends State<SongMenuList> with SingleTickerProviderStateMi
     final Completer<Null> completer = new Completer<Null>();
 
     getData((status){
-      setState(() {
-        loadState=status;
-        completer.complete(null);
-      });
+      if(mounted) {
+        setState(() {
+          loadState = status;
+          completer.complete(null);
+        });
+      }
     });
 
 

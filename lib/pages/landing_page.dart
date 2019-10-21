@@ -114,6 +114,7 @@ class _LandingPage extends State<LandingPage> with SingleTickerProviderStateMixi
 
   @override
   void dispose() {
+    controllerTest.dispose();
     super.dispose();
   }
 }

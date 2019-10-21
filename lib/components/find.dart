@@ -56,9 +56,11 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
     AdController.addListener((){
       if (AdController.index.toDouble() == AdController.animation.value) {
         //赋值 并更新数据
-        this.setState(() {
-          _AdcurrentIndex = AdController.index;
-        });
+        if(mounted) {
+          this.setState(() {
+            _AdcurrentIndex = AdController.index;
+          });
+        }
       }
     });
   }
@@ -68,13 +70,15 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
     final Completer<Null> completer = new Completer<Null>();
 
     getData((status){
-      setState(() {
-        loadState=status;
-        completer.complete(null);
-        if(adList.length>0){
-          _adController();
-        }
-      });
+      if(mounted) {
+        setState(() {
+          loadState = status;
+          completer.complete(null);
+          if (adList.length > 0) {
+            _adController();
+          }
+        });
+      }
     });
 
     /*    // 启动一下 [Timer] 在3秒后，在list里面添加一条数据，关完成这个刷新
@@ -438,6 +442,4 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
     super.dispose();
   }
 
-  @override
-  bool get wantKeepAlive => true;
 }
