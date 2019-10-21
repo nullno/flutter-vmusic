@@ -48,13 +48,6 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
   @override
   void initState(){
      super.initState();
-
-//    数据刷新
-//     getData((status){
-//       setState(() {
-//       loadState=status;
-//       });
-//     });
     _flashData();
   }
   //广告图初始化controller并添加监听
@@ -78,6 +71,9 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
       setState(() {
         loadState=status;
         completer.complete(null);
+        if(adList.length>0){
+          _adController();
+        }
       });
     });
 
@@ -94,25 +90,15 @@ class _Find extends State<Find> with SingleTickerProviderStateMixin{
   //获取数据
  void getData(complete) async{
     var status = 0;
-   //banner
-  await  getBanner((res){
-       status = 1;
-       adList = res['banners'];
-       _adController();
-     },(err){
-      status = 2;
-       print(err);
-     });
 
-   // 获取推荐歌单
-await   getPersonalizedSongList((res){
-        status = 1;
-        songLists=res['result'];
+   await homeGet((res){
+      status = 1;
+      adList = res[0]['banners'];
+      songLists= res[1]['result'];
     },(err){
       status = 2;
       print(err);
     });
-
    complete(status);
  }
 
@@ -144,7 +130,7 @@ await   getPersonalizedSongList((res){
     }
 
     //广告图
-    Widget slideBanner = TabBarView(
+    Widget slideBanner = adList.length>0?TabBarView(
       controller: AdController,
       children:  adList.map((item){
         return Container(
@@ -163,7 +149,7 @@ await   getPersonalizedSongList((res){
           )
         );
       }).toList()
-    );
+    ):Container();
 
     //热歌榜
     Widget  songRank = Column(

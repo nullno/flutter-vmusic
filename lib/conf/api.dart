@@ -16,15 +16,7 @@ BaseOptions options = new BaseOptions(
 Dio dio = new Dio(options); // with default Options
 
 
-//banner
-void getBanner(resolve,reject) async {
-  try {
-    Response<dynamic> response = await dio.get("/banner",queryParameters:{"types": "1",});
-    resolve(jsonDecode(response.toString()));
-  } catch (e) {
-    reject(e);
-  }
-}
+
 
 //搜索
 void search(parameters,resolve,[reject]) async {
@@ -76,6 +68,16 @@ void getRank(resolve,[reject]) async {
 }
 
 
+//banner
+void getBanner(resolve,reject) async {
+  try {
+    Response<dynamic> response = await dio.get("/banner",queryParameters:{"types": "1",});
+    resolve(jsonDecode(response.toString()));
+  } catch (e) {
+    reject(e);
+  }
+}
+
 //获取推荐歌单
 void getPersonalizedSongList(resolve,[reject]) async {
   try {
@@ -85,6 +87,20 @@ void getPersonalizedSongList(resolve,[reject]) async {
     reject(e);
   }
 }
+void homeGet(resolve,[reject]) async{
+  try{
+    List<Response> response = await Future.wait([
+      dio.get("/banner",queryParameters:{"types": "1",}),
+      dio.get("/personalized",queryParameters:{"limit": 20})
+    ]);
+    resolve(jsonDecode(response.toString()));
+  }catch(e){
+
+  }
+
+}
+
+
 //精品歌单（歌单广场）
 void getHighqualitySongList(parameters,resolve,[reject]) async {
   try {

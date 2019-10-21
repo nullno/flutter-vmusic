@@ -66,7 +66,7 @@ tranTimestr(int timestamp){
 
   var date = new DateTime.fromMillisecondsSinceEpoch(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
   var Y = date.year.toString() + '-';
-  var M = (date.month + 1 < 10 ? '0' + (date.month + 1).toString() : (date.month + 1).toString()) + '-';
+  var M = (date.month < 10 ? '0' + (date.month).toString() : (date.month).toString()) + '-';
   var D = date.day.toString() + ' ';
   var h = date.hour.toString() + ':';
   var m = date.minute < 10 ?'0' +date.minute.toString()+ '':date.minute.toString()+ '';

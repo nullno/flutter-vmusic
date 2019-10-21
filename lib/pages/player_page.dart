@@ -2,19 +2,17 @@
 *搜索页
  */
 
-import 'dart:ui' as prefix0;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix1;
-
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_vmusic/utils/FixedSizeText.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:ui';
 import 'package:flutter_vmusic/utils/tool.dart';
 
 import 'package:flutter_vmusic/conf/api.dart';
 
 import 'package:flutter_vmusic/conf/platform.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 
 class PlayerPage extends StatefulWidget{
@@ -29,19 +27,49 @@ class PlayerPage extends StatefulWidget{
 
 class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
 
-
+  //音乐控制
+  AudioPlayer audioPlayer = new AudioPlayer();
+  bool playStatus=false;
+  //旋转动画
+  AnimationController _myController;
+  Animation<double> rotateDisc;
   //歌单详情
   Map songDetail =  new Map();
 
   //加载状态
   int loadState = 0; //0 加载中  1加载完成  2 失败
 
+  String playUrl ='';
+
   @override
   void initState() {
     super.initState();
+    //动画控制器
+    _myController = new AnimationController(duration: const Duration(seconds: 10), vsync: this);
+
+
+    rotateDisc = new Tween(begin: 0.0, end: 1.0).animate(_myController);
+    rotateDisc.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        //动画从 controller.forward() 正向执行 结束时会回调此方法
+        print("status is completed");
+        //重置起点
+        _myController.reset();
+        //开启
+         _myController.forward();
+      } else if (status == AnimationStatus.dismissed) {
+        //动画从 controller.reverse() 反向执行 结束时会回调此方法
+        print("status is dismissed");
+      } else if (status == AnimationStatus.forward) {
+        print("status is forward");
+        //执行 controller.forward() 会回调此状态
+      } else if (status == AnimationStatus.reverse) {
+        //执行 controller.reverse() 会回调此状态
+        print("status is reverse");
+      }
+      });
 
     SYS.hideBar();
-
 
     //歌曲详情
     getSongDetail(widget.params['id'],(res){
@@ -53,16 +81,34 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
       loadState=2;
     });
     //歌曲链接
-//    getSongUrl(widget.params['id'],(res){
-//        setState(() {
-//
-//        });
-//    },(err){
-//    loadState=2;
-//    });
+    getSongUrl(widget.params['id'],(res){
+        setState(() {
+          if(res['data'].length>0){
+          this.playUrl=res['data']['url'];
+//          playSong(this.playUrl);
+          }
+        });
+    },(err){
+    loadState=2;
+    });
 
   }
 
+
+
+  void playSong(url) async{
+    int result = await audioPlayer.play(url);
+    if(result==1) {
+      playStatus = !playStatus;
+    }
+  }
+
+  void pauseSong(url) async{
+    int result = await audioPlayer.pause();
+    if(result==1) {
+      playStatus = !playStatus;
+    }
+  }
 
 
   @override
@@ -124,7 +170,7 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
       )),
       offstage:false,
     );
-    //
+    //播放主界面
     Widget playView= Container(
         decoration:new BoxDecoration(
             image: new DecorationImage(
@@ -155,30 +201,52 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                         ),
                       ),
                       child:Center(
-                        child: Container(
-                              height:250,width:250.0,
-                              decoration:new BoxDecoration(
+                      child: Container(
+                       height:380,
+                       child:Stack(
+                         alignment:Alignment.topCenter,
+                         children: <Widget>[
+                           RotationTransition(
+                             turns: rotateDisc,
+                             child:
+                             Center(
+                               child: Container(
+                                 height:266,width:266.0,
+                                 decoration:new BoxDecoration(
+                                     image: new DecorationImage(
+                                       image:AssetImage('assets/image/disc.png'),
+                                       fit:BoxFit.fill,
+                                     )
+                                 ),
+                                 child:Padding(
+                                     padding:EdgeInsets.all(50.0),
+                                     child:  ClipRRect(
+                                         borderRadius: BorderRadius.circular(100.0),
+                                         child:Image.network(songDetail.isNotEmpty?songDetail['al']['picUrl']:'')
+                                     )
+                                 ),
 
-                              image: new DecorationImage(
-                                  image:AssetImage('assets/image/disc.png'),
-
-                                    fit:BoxFit.fill,
-                              )
-                              ),
-                          child:Padding(
-                            padding:EdgeInsets.all(50.0),
-                            child:  ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child:Image.network(songDetail.isNotEmpty?songDetail['al']['picUrl']:'')
-                            )
-                          ),
-
+                               ),
+                             ),
                            ),
+                           Transform.rotate(
+                           angle:playStatus?0:-0.5,
+                             alignment:Alignment.topLeft,
+                             child:Container(
+                               height:100,
+                               child: Image.asset('assets/image/needle.png'),
+                             ) ,
+                           ),
+                         ],
+                       ) ,
                       ),
+                      ),
+
+
                     ),
           ])
     );
-
+    //播放控制
     Widget playControl = Container(
           height:150.0,
 //          color:Colors.black,
@@ -266,8 +334,16 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
                     padding:EdgeInsets.all(0.0),
                     onPressed: () {
 
+                      if(!playStatus){
+                        _myController.forward();
+                      }else{
+                        _myController.stop();
+                      }
+                      setState(() {
+                        playStatus=!playStatus;
+                      });
                     },
-                    icon: Icon(Icons.play_circle_outline, color: Colors.white70,
+                    icon: Icon(playStatus?Icons.pause_circle_outline:Icons.play_circle_outline, color: Colors.white70,
                         size: 50.0),
                   ),
                   IconButton(
@@ -311,7 +387,9 @@ class _PlayerPage extends State<PlayerPage> with SingleTickerProviderStateMixin{
   }
   @override
   void dispose() {
+    _myController.dispose();
     super.dispose();
+
   }
 
 }
