@@ -9,9 +9,11 @@ https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi
 ### api接口
 https://musicapi.nullno.com/
 
-### 演示
+### 界面
 ![nullno-img](https://source.nullno.com/images/Screenshot_20191011-164737.jpg)
 https://source.nullno.com/images/Screenshot_20191011-164737.jpg
+
+![nullno-img](https://source.nullno.com/images/Screenshot_20191022-133435.jpg)
 
 ##功能
 
