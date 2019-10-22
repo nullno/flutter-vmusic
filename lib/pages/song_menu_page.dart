@@ -212,7 +212,7 @@ class _SongMenu extends State<SongMenu> with SingleTickerProviderStateMixin{
                           crossAxisCount: 2, //Grid按两列显示
                           mainAxisSpacing: 10.0,
                           crossAxisSpacing: 10.0,
-                          childAspectRatio: 0.8,
+                          childAspectRatio: 0.75,
                         ),
                         delegate: SliverChildListDelegate(
                           songLists.map((item){
